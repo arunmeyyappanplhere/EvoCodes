@@ -30,12 +30,12 @@ const Contact = () => {
 
   return (
     <section className="min-h-screen bg-[#050A0A] text-white py-24 px-6 relative overflow-hidden">
-      {/* Background Glow */}
+     
       <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full"></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Heading */}
+       
 
         <div className="text-center mb-16">
           <span className="px-4 py-2 rounded-full border border-cyan-400 text-cyan-400 tracking-widest text-sm">
@@ -54,7 +54,7 @@ const Contact = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
-          {/* Left Section */}
+          
 
           <div className="space-y-6">
             <InfoCard
@@ -83,17 +83,18 @@ const Contact = () => {
 
             {/* Social */}
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4">
-                Follow Us
-              </h3>
+           {/* Desktop Social */}
+<div className="hidden lg:block">
+  <h3 className="text-lg font-semibold mb-4">
+    Follow Us
+  </h3>
 
-              <div className="flex gap-4">
-                <SocialButton text="GitHub" />
-                <SocialButton text="LinkedIn" />
-                <SocialButton text="Instagram" />
-              </div>
-            </div>
+  <div className="flex gap-4">
+    <SocialButton text="GitHub" />
+    <SocialButton text="LinkedIn" />
+    <SocialButton text="Instagram" />
+  </div>
+</div>
           </div>
 
           {/* Right Section */}
@@ -148,14 +149,26 @@ const Contact = () => {
                 required
                 className="w-full rounded-xl bg-[#111819] border border-cyan-400/20 px-5 py-4 outline-none resize-none focus:border-cyan-400 transition"
               />
-
+            <div className="flex justify-center">
               <button
                 type="submit"
                 className="bg-cyan-400 text-black font-semibold px-8 py-4 rounded-xl hover:shadow-[0_0_25px_rgba(0,255,255,.45)] transition-all duration-300 hover:scale-105"
               >
                 Send Message →
               </button>
+              </div>
             </form>
+            <div className="lg:hidden mt-10">
+  <h3 className="text-lg font-semibold mb-4">
+    Follow Us
+  </h3>
+
+  <div className="flex flex-wrap gap-4">
+    <SocialButton text="GitHub" />
+    <SocialButton text="LinkedIn" />
+    <SocialButton text="Instagram" />
+  </div>
+</div>
           </div>
         </div>
       </div>
@@ -187,6 +200,7 @@ const InfoCard = ({ emoji, title, value }) => {
 
 const SocialButton = ({ text }) => {
   return (
+   
     <button
       className="px-5 py-3 rounded-xl bg-[#0B1112] border border-cyan-400/20 hover:bg-cyan-400 hover:text-black transition-all duration-300"
     >
