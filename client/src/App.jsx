@@ -8,16 +8,8 @@ import Footer from './components/Footer.jsx'
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-rich-black overflow-x-hidden">
-      <Navbar />
-      <main>
-        <Hero />
-        <Stats />
-        <Services />
-        <Projects />
-        <CTA />
-      </main>
-      <Footer />
+    <div>
+      <Contact />
     </div>
   )
 }
