@@ -1,15 +1,16 @@
-import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles } from 'lucide-react'
-import NeuralCore from './NeuralCore.jsx'
+import { motion } from "framer-motion";
+import { ArrowRight, Sparkles } from "lucide-react";
+import NeuralCore from "./NeuralCore.jsx";
+import TypewriterWords from "./TypewriterWords.jsx";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   show: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.12, duration: 0.7, ease: 'easeOut' },
+    transition: { delay: i * 0.12, duration: 0.7, ease: "easeOut" },
   }),
-}
+};
 
 export default function Hero() {
   return (
@@ -49,9 +50,10 @@ export default function Hero() {
             initial="hidden"
             animate="show"
             custom={2}
-            className="mt-6 font-display text-lg text-white/90"
+            className="mt-6 font-display text-lg text-white/90 min-h-[1.75rem]"
           >
-            Architecting <span className="text-cyan-400">AI Solutions</span>
+            Architecting{" "}
+            <TypewriterWords className="text-cyan-400 font-semibold" />
           </motion.p>
 
           <motion.p
@@ -74,7 +76,10 @@ export default function Hero() {
           >
             <motion.a
               href="#projects"
-              whileHover={{ scale: 1.04, boxShadow: '0 0 28px rgba(34,211,238,0.5)' }}
+              whileHover={{
+                scale: 1.04,
+                boxShadow: "0 0 28px rgba(34,211,238,0.5)",
+              }}
               whileTap={{ scale: 0.97 }}
               className="inline-flex items-center gap-2 bg-cyan-400 text-black font-semibold text-sm px-6 py-3 rounded-full"
             >
@@ -82,7 +87,7 @@ export default function Hero() {
             </motion.a>
             <motion.a
               href="#process"
-              whileHover={{ scale: 1.03, borderColor: 'rgba(34,211,238,0.6)' }}
+              whileHover={{ scale: 1.03, borderColor: "rgba(34,211,238,0.6)" }}
               whileTap={{ scale: 0.97 }}
               className="inline-flex items-center gap-2 border border-white/15 text-white text-sm font-medium px-6 py-3 rounded-full"
             >
@@ -95,12 +100,12 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
           className="relative h-[380px] sm:h-[440px] lg:h-[520px]"
         >
           <NeuralCore />
         </motion.div>
       </div>
     </section>
-  )
+  );
 }
