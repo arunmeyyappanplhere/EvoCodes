@@ -134,7 +134,7 @@ export default function NeuralCore() {
 
   return (
     <div
-      className="relative w-full h-full min-h-[420px] cursor-grab active:cursor-grabbing"
+      className="relative w-full h-full min-h-105 cursor-grab active:cursor-grabbing"
       onPointerEnter={() => setReady(true)}
     >
       <Canvas

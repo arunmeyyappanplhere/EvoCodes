@@ -59,7 +59,7 @@ export default function TypewriterWords({ className = "" }) {
       <span className="sr-only">{WORDS.join(", ")}</span>
       <span aria-hidden="true" className={className}>
         {text}
-        <span className="inline-block w-[2px] h-[0.9em] bg-cyan-400 ml-1 align-middle animate-pulse" />
+        <span className="inline-block w-0.5 h-[0.9em] bg-cyan-400 ml-1 align-middle animate-pulse" />
       </span>
     </span>
   );
