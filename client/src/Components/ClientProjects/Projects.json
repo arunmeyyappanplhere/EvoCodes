@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "title": "Aksharas Academy",
+    "category": "Education",
+    "description": "Modern educational platform with course management, responsive UI and student inquiry system.",
+    "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200",
+    "live": "#",
+    "github": "#"
+  },
+  {
+    "id": 2,
+    "title": "Fresh Foods",
+    "category": "E-Commerce",
+    "description": "Responsive food product website with product showcase, uohsdufvhvudshfvjuidhfjkdshfshdjifhdsjfhdjfhdjfhjdhcfkdfudhfujdhfjhcfjdhffjdhfj dhjffhdjfhdjhjdhfjdhjdhhjfhdjf  jehfjkdhfjkhjdfhjkefhcategories and modern shopping experience.",
+    "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200",
+    "live": "#"
+   
+  },
+  {
+    "id": 3,
+    "title": "Hospital Management",
+    "category": "Healthcare",
+    "description": "Professional hospital website featuring appointment booking and service management.",
+    "image": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200",
+    "live": "#"
+  },
+  {
+    "id": 4,
+    "title": "Real Estate",
+    "category": "Business",
+    "description": "Luxury property listing website with responsive search and property showcase.",
+    "image": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200",
+    "live": "#"
+  },
+  {
+    "id": 5,
+    "title": "Restaurant Website",
+    "category": "Restaurant",
+    "description": "Elegant restaurant website with online menu, reservation and gallery.",
+    "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200",
+    "live": "#"
+  },
+  {
+    "id": 6,
+    "title": "Corporate Portfolio",
+    "category": "Corporate",
+    "description": "Premium business portfolio with services, team, testimonials and contact system.",
+    "image": "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1200",
+    "live": "#"
+  }
+]
