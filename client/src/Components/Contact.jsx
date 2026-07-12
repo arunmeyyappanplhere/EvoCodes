@@ -116,7 +116,7 @@ const Contact = () => {
                   value={formData.fullName}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-xl bg-[#111819] border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition"
+                  className="w-full rounded-xl bg-deep-slate border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition"
                 />
 
                 <input
@@ -126,7 +126,7 @@ const Contact = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-xl bg-[#111819] border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition"
+                  className="w-full rounded-xl bg-deep-slate border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition"
                 />
               </div>
 
@@ -137,7 +137,7 @@ const Contact = () => {
                 value={formData.subject}
                 onChange={handleChange}
                 required
-                className="w-full rounded-xl bg-[#111819] border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition"
+                className="w-full rounded-xl bg-deep-slate border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition"
               />
 
               <textarea
@@ -147,7 +147,7 @@ const Contact = () => {
                 value={formData.message}
                 onChange={handleChange}
                 required
-                className="w-full rounded-xl bg-[#111819] border border-cyan-400/20 px-5 py-4 outline-none resize-none focus:border-cyan-400 transition"
+                className="w-full rounded-xl bg-deep-slate border border-cyan-400/20 px-5 py-4 outline-none resize-none focus:border-cyan-400 transition"
               />
             <div className="flex justify-center">
               <button
