@@ -1,1 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap");
 @import "tailwindcss";
+
+@theme {
+  --color-rich-black: #050a0a;
+  --color-dark-charcoal: #0b1112;
+  --color-deep-slate: #111819;
+  --color-cyan-400: #22d3ee;
+
+  --font-body: "Inter", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+}
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-rich-black text-white font-body antialiased;
+  background-image:
+    radial-gradient(
+      ellipse 80% 50% at 50% -10%,
+      rgba(34, 211, 238, 0.12),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 90% 30%,
+      rgba(34, 211, 238, 0.06),
+      transparent
+    );
+  background-attachment: fixed;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.3);
+  color: #ffffff;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.5);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #22d3ee 0%, #67e8f9 50%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.card-border {
+  border: 1px solid rgba(34, 211, 238, 0.15);
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
