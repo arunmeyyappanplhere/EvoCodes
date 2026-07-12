@@ -1,10 +1,10 @@
 import React from 'react'
-import Contact from './Components/Contact'
+import Contact from './Components/Contact/Contact'
 import Projects from './Components/ClientProjects/Projects'
 const App = () => {
   return (
     <div>
-      {/* <Contact /> */}
+      <Contact />
       <Projects />
     </div>
   )
