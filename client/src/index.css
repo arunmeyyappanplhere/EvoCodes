@@ -16,6 +16,11 @@
 
 body {
   @apply bg-rich-black text-white font-body antialiased;
+  /* Clip horizontal overflow here on body so the App wrapper div never
+     needs overflow-x:hidden — setting overflow-x on a div forces the
+     browser to compute overflow-y as 'auto', turning it into a scroll
+     container and breaking position:sticky children + window scroll tracking. */
+  overflow-x: hidden;
   background-image:
     radial-gradient(
       ellipse 80% 50% at 50% -10%,
@@ -75,3 +80,12 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

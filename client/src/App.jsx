@@ -10,12 +10,12 @@ import Footer from './components/Footer.jsx'
 
 export default function App() {
   return (
-    // overflow-y-visible is explicit on purpose: setting overflow-x
-    // without overflow-y makes the browser silently compute overflow-y
-    // as "auto", turning this div into its own scroll container and
-    // breaking every position:sticky element inside it (Navbar, and
-    // the DevWorkflow pin). Declaring both axes explicitly avoids that.
-    <div className="min-h-screen bg-rich-black overflow-x-hidden overflow-y-visible">
+    // overflow-x:hidden lives on body (see index.css) — NOT here.
+    // Putting overflow-x:hidden on a div forces the browser to silently
+    // compute overflow-y as 'auto', which turns this div into its own scroll
+    // container, breaking every position:sticky child (Navbar, DevWorkflow)
+    // and causing Framer Motion's window-based useScroll to always read 0.
+    <div className="min-h-screen bg-rich-black">
       <Navbar />
       <main>
         <Hero />

@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 
 const STEPS = [
   {
@@ -83,58 +83,101 @@ export default function DevWorkflow() {
   const rowRef = useRef(null);
   const total = STEPS.length;
 
-  const [maxScroll, setMaxScroll] = useState(0);
-  const [sectionHeight, setSectionHeight] = useState("100vh");
-  const [ready, setReady] = useState(false); // gate rendering until measured once
+  // Store maxScroll in a ref so the scroll listener always reads the latest
+  // value without needing to be torn down and re-registered after each measure.
+  const maxScrollRef = useRef(0);
+
+  const [sectionH, setSectionH] = useState("100vh");
+  const [ready, setReady] = useState(false);
+
+  // ─── Motion values ────────────────────────────────────────────────────────
+  // xMV       → translateX on the cards row (0 → -maxScroll px)
+  // progressMV → 0–1 progress used by StepCard glows and the progress line
+  const xMV = useMotionValue(0);
+  const progressMV = useMotionValue(0);
 
   useLayoutEffect(() => {
+    // ── scroll handler ────────────────────────────────────────────────────
+    // Reads window.scrollY + section's live bounding rect to compute how far
+    // the user has scrolled "into" the section, then updates both motion values.
+    //
+    // getBoundingClientRect().top is negative once we've scrolled past the
+    // section's top edge.  We clamp to [0, 1] so nothing breaks before or
+    // after the section.
+    function onScroll() {
+      if (!sectionRef.current || maxScrollRef.current <= 0) return;
+      const rect = sectionRef.current.getBoundingClientRect();
+      // How many px we have scrolled past the section's top edge
+      const scrolledIn = Math.max(0, -rect.top);
+      const progress = Math.min(1, scrolledIn / maxScrollRef.current);
+      xMV.set(-progress * maxScrollRef.current);
+      progressMV.set(progress);
+    }
+
+    // ── measure ───────────────────────────────────────────────────────────
+    // Computes how many px the cards row overflows the viewport (the "extra"
+    // vertical height we add to the section so the page has room to scroll
+    // while the pinned panel tracks it horizontally).
     function measure() {
       if (!rowRef.current) return;
-      const rowWidth = rowRef.current.scrollWidth;
-      const viewportWidth = window.innerWidth;
-      const distance = Math.max(rowWidth - viewportWidth, 0);
-      setMaxScroll(distance);
-      setSectionHeight(`${window.innerHeight + distance}px`);
+      const overflow = Math.max(rowRef.current.scrollWidth - window.innerWidth, 0);
+      maxScrollRef.current = overflow;
+      // Section height = one full viewport (the sticky panel) + overflow budget
+      setSectionH(`calc(100vh + ${overflow}px)`);
       setReady(true);
+      // Re-run the scroll handler immediately after measuring so the
+      // translation is correct if the user is already mid-section on resize.
+      onScroll();
     }
 
-    // Measure immediately (covers the common case)...
+    // Measure once on mount, then again after fonts resolve (font-swap shifts
+    // text widths and therefore card widths / scrollWidth).
     measure();
+    document.fonts?.ready.then(measure);
 
-    // ...then re-measure once web fonts finish loading, since a font
-    // swap after initial layout can change scrollWidth and silently
-    // shrink the pinned scroll distance if we only measured once.
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(measure);
-    }
-
-    // Also watch the row itself for any further layout/size changes.
+    // Re-measure whenever the row resizes (viewport resize, orientation change)
     const ro = new ResizeObserver(measure);
     if (rowRef.current) ro.observe(rowRef.current);
-
     window.addEventListener("resize", measure);
+
+    // The scroll listener covers ALL scroll input methods:
+    //   • mouse-wheel over page          ✓
+    //   • browser scrollbar drag         ✓
+    //   • trackpad swipe                 ✓
+    //   • keyboard (PageDown / arrows)   ✓
+    //   • programmatic scrollTo          ✓
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => {
-      window.removeEventListener("resize", measure);
       ro.disconnect();
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", onScroll);
     };
-  }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
-
-  const x = useTransform(scrollYProgress, [0, 1], [0, -maxScroll]);
-  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // xMV / progressMV are stable refs — no dep needed.
 
   return (
+    /*
+      Outer section — intentionally TALL.
+      Height = 100vh + maxScroll gives the page the vertical scroll room
+      needed so the inner sticky panel stays pinned for exactly as long as it
+      takes to reveal all 8 cards.  After that the section bottom exits the
+      viewport, the sticky panel unpins, and normal vertical flow resumes.
+    */
     <section
       id="process"
       ref={sectionRef}
-      style={{ height: sectionHeight, opacity: ready ? 1 : 0 }}
-      className="relative bg-rich-black transition-opacity duration-200"
+      style={{ height: sectionH, opacity: ready ? 1 : 0 }}
+      className="relative bg-rich-black transition-opacity duration-300"
     >
+      {/*
+        Inner sticky panel — 100vh tall, sticks to the top of the viewport
+        while the outer section's extra height scrolls past behind it.
+        overflow-hidden clips the cards row so nothing bleeds outside.
+      */}
       <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+
+        {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -150,15 +193,19 @@ export default function DevWorkflow() {
           </p>
         </motion.div>
 
+        {/* Cards row — translated left as the user scrolls down */}
         <div className="relative">
           <motion.div
             ref={rowRef}
-            style={{ x }}
+            style={{ x: xMV }}
             className="flex gap-16 px-10 lg:px-24 w-max relative"
           >
+            {/* Background connector line */}
             <div className="absolute top-8 left-10 right-10 h-px bg-white/10" />
+
+            {/* Animated cyan progress line driven by scroll progress */}
             <motion.div
-              style={{ scaleX: lineScale }}
+              style={{ scaleX: progressMV }}
               className="absolute top-8 left-10 right-10 h-px bg-cyan-400 origin-left"
             />
 
@@ -168,12 +215,13 @@ export default function DevWorkflow() {
                 step={step}
                 index={i}
                 total={total}
-                progress={scrollYProgress}
+                progress={progressMV}
               />
             ))}
           </motion.div>
         </div>
 
+        {/* Scroll hint */}
         <p className="text-center text-xs text-gray-secondary mt-14 tracking-wide">
           Scroll to explore →
         </p>
