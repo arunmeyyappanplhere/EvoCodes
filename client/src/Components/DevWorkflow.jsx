@@ -65,7 +65,7 @@ function StepCard({ step, index, total, progress }) {
   );
 
   return (
-    <div className="w-[280px] sm:w-[360px] lg:w-[400px] shrink-0">
+    <div className="w-70 sm:w-90 lg:w-100 shrink-0">
       <motion.div
         style={{ borderColor, boxShadow }}
         className="w-16 h-16 rounded-full border-2 flex items-center justify-center font-mono text-base mb-7 bg-rich-black"
