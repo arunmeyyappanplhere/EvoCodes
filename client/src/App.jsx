@@ -1,3 +1,4 @@
+import ParticleBackground from './components/ParticleBackground.jsx'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import Stats from './components/Stats.jsx'
@@ -7,7 +8,8 @@ import Projects from './components/Projects.jsx'
 import Testimonials from './components/Testimonials.jsx'
 import CTA from './components/CTA.jsx'
 import Footer from './components/Footer.jsx'
-
+import Contact from "./Components/Contact/Contact.jsx"
+import Pricing from './Components/Pricing.jsx'
 export default function App() {
   return (
     // overflow-x:hidden lives on body (see index.css) — NOT here.
@@ -15,7 +17,8 @@ export default function App() {
     // compute overflow-y as 'auto', which turns this div into its own scroll
     // container, breaking every position:sticky child (Navbar, DevWorkflow)
     // and causing Framer Motion's window-based useScroll to always read 0.
-    <div className="min-h-screen bg-rich-black">
+    <div className="min-h-screen">
+      <ParticleBackground />
       <Navbar />
       <main>
         <Hero />
@@ -25,6 +28,8 @@ export default function App() {
         <Projects />
         <Testimonials />
         <CTA />
+        <Pricing/>
+        <Contact/>
       </main>
       <Footer />
     </div>

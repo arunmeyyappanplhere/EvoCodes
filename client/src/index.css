@@ -14,6 +14,22 @@
   scroll-behavior: smooth;
 }
 
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #print-quote,
+  #print-quote * {
+    visibility: visible;
+  }
+  #print-quote {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+}
+
 body {
   @apply bg-rich-black text-white font-body antialiased;
   /* Clip horizontal overflow here on body so the App wrapper div never
