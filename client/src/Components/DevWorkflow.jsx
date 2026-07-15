@@ -51,29 +51,31 @@ function StepCard({ step, index, total, progress }) {
   const borderColor = useTransform(
     progress,
     [start, end],
-    ["rgba(255,255,255,0.15)", "rgba(34,211,238,0.9)"]
+    ["rgba(255,255,255,0.15)", "rgba(34,211,238,0.9)"],
   );
   const glow = useTransform(progress, [start, end], [0, 1]);
   const boxShadow = useTransform(
     glow,
-    (v) => `0 0 ${v * 22}px rgba(34,211,238,${v * 0.55})`
+    (v) => `0 0 ${v * 22}px rgba(34,211,238,${v * 0.55})`,
   );
   const textColor = useTransform(
     progress,
     [start, end],
-    ["rgba(255,255,255,0.5)", "rgba(34,211,238,1)"]
+    ["rgba(255,255,255,0.5)", "rgba(34,211,238,1)"],
   );
 
   return (
     <div className="w-70 sm:w-90 lg:w-100 shrink-0">
       <motion.div
         style={{ borderColor, boxShadow }}
-        className="w-16 h-16 rounded-full border-2 flex items-center justify-center font-mono text-base mb-7 bg-rich-black"
+        className="w-16 h-16 rounded-full border-2 flex items-center justify-center font-mono text-base mb-7 bg-transparent"
       >
         <motion.span style={{ color: textColor }}>{step.id}</motion.span>
       </motion.div>
       <h3 className="font-display font-bold text-2xl mb-3">{step.title}</h3>
-      <p className="text-base text-gray-secondary leading-relaxed pr-6">{step.desc}</p>
+      <p className="text-base text-gray-secondary leading-relaxed pr-6">
+        {step.desc}
+      </p>
     </div>
   );
 }
@@ -120,7 +122,10 @@ export default function DevWorkflow() {
     // while the pinned panel tracks it horizontally).
     function measure() {
       if (!rowRef.current) return;
-      const overflow = Math.max(rowRef.current.scrollWidth - window.innerWidth, 0);
+      const overflow = Math.max(
+        rowRef.current.scrollWidth - window.innerWidth,
+        0,
+      );
       maxScrollRef.current = overflow;
       // Section height = one full viewport (the sticky panel) + overflow budget
       setSectionH(`calc(100vh + ${overflow}px)`);
@@ -168,15 +173,14 @@ export default function DevWorkflow() {
       id="process"
       ref={sectionRef}
       style={{ height: sectionH, opacity: ready ? 1 : 0 }}
-      className="relative bg-rich-black transition-opacity duration-300"
+      className="relative bg-transparent transition-opacity duration-300"
     >
       {/*
         Inner sticky panel — 100vh tall, sticks to the top of the viewport
         while the outer section's extra height scrolls past behind it.
         overflow-hidden clips the cards row so nothing bleeds outside.
       */}
-      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
-
+      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden bg-transparent">
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}

@@ -1,11 +1,11 @@
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion";
 
 const stats = [
-  { value: '150', label: 'Projects Delivered' },
-  { value: '12', label: 'AI Patents' },
-  { value: '45', label: 'Tech Partners' },
-  { value: '98%', label: 'Client Retention' },
-]
+  { value: "150", label: "Projects Delivered" },
+  { value: "24/7", label: "Technical Support" },
+  { value: "45", label: "Certified Developers" },
+  { value: "100%", label: "On-Time Delivery" },
+];
 
 export default function Stats() {
   return (
@@ -30,5 +30,5 @@ export default function Stats() {
         ))}
       </div>
     </section>
-  )
+  );
 }
