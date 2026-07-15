@@ -269,7 +269,7 @@ export default function Pricing() {
             </div>
 
             {/* estimate summary */}
-            <div className="rounded-2xl border border-cyan-400/25 bg-gradient-to-b from-cyan-400/10 to-transparent p-8 flex flex-col">
+            <div className="rounded-2xl border border-cyan-400/25 bg-linear-to-b from-cyan-400/10 to-transparent p-8 flex flex-col">
               <h4 className="text-xs font-mono tracking-wide text-cyan-400 mb-2">ESTIMATED TOTAL</h4>
               <p className="font-display font-bold text-4xl mb-1">{currency(total)}</p>
               <p className="text-xs text-gray-secondary mb-8">First-year estimate, inclusive of selected add-ons</p>
