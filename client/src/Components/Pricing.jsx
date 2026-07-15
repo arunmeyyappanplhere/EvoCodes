@@ -1,6 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Download } from "lucide-react";
+import { Check, Download, Leaf, Layers, Sparkles, Crown, Minus, Plus } from "lucide-react";
+
+const PLAN_META = {
+  eco: { icon: Leaf, color: "#67E8F9" },
+  basic: { icon: Layers, color: "#22D3EE" },
+  standard: { icon: Sparkles, color: "#22D3EE" },
+  premium: { icon: Crown, color: "#A78BFA" },
+};
 
 const PLANS = [
   {
@@ -47,6 +55,7 @@ const PLANS = [
     key: "standard",
     name: "Standard",
     tagline: "Full-featured build for growing businesses",
+    popular: true,
     domain: [1499, 1999],
     hosting: [2500, 4000],
     ssl: "Included",
@@ -95,25 +104,181 @@ const DESCRIPTIVE_ITEMS = [
   { key: "content", label: "Content Upload" },
 ];
 
+function useAnimatedNumber(value, duration = 450) {
+  const [display, setDisplay] = useState(value);
+  const prevRef = useRef(value);
+
+  useEffect(() => {
+    const start = prevRef.current;
+    const change = value - start;
+    if (change === 0) return;
+    let raf;
+    let startTime = null;
+
+    const step = (ts) => {
+      if (startTime === null) startTime = ts;
+      const progress = Math.min((ts - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(start + change * eased);
+      if (progress < 1) {
+        raf = requestAnimationFrame(step);
+      } else {
+        prevRef.current = value;
+      }
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value, duration]);
+
+  return display;
+}
+
+/* ---------------------------------------------------------
+   Themed money input: native number-input spinner arrows
+   are hidden (Tailwind arbitrary variants target the
+   webkit pseudo-elements directly; -moz-appearance handles
+   Firefox), replaced with custom cyan +/- stepper buttons.
+--------------------------------------------------------- */
+function MoneyInput({ value, onChange, step = 50, size = "md" }) {
+  const dims = size === "sm" ? "w-16 text-sm" : "w-20";
+  return (
+    <div className="inline-flex items-center bg-deep-slate border border-cyan-400/20 rounded-lg overflow-hidden focus-within:border-cyan-400/60 transition-colors">
+      <button
+        type="button"
+        onClick={() => onChange(Math.max(0, value - step))}
+        className="px-2 py-1.5 text-cyan-400/60 hover:text-cyan-400 hover:bg-cyan-400/10 active:bg-cyan-400/20 transition-colors"
+        aria-label="Decrease"
+      >
+        <Minus size={11} />
+      </button>
+      <div className="flex items-center gap-0.5 px-1">
+        <span className="text-cyan-400 text-xs">₹</span>
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(Math.max(0, Number(e.target.value) || 0))}
+          className={`${dims} bg-transparent text-center text-cyan-400 font-semibold outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]`}
+        />
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange(value + step)}
+        className="px-2 py-1.5 text-cyan-400/60 hover:text-cyan-400 hover:bg-cyan-400/10 active:bg-cyan-400/20 transition-colors"
+        aria-label="Increase"
+      >
+        <Plus size={11} />
+      </button>
+    </div>
+  );
+}
+
+function MoneyField({ label, value, onChange, min, max, step = 50 }) {
+  const sliderMin = Math.min(min, value);
+  const sliderMax = Math.max(max, value);
+
+  return (
+    <div className="mb-6">
+      <div className="flex items-center justify-between text-sm mb-2">
+        <span className="text-white/80">{label}</span>
+        <MoneyInput value={value} onChange={onChange} step={step} />
+      </div>
+      <input
+        type="range"
+        min={sliderMin}
+        max={sliderMax}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full accent-cyan-400"
+      />
+    </div>
+  );
+}
+
+function CostRow({ label, baseValue, value, included, onToggle, onChange }) {
+  if (baseValue === 0) {
+    return (
+      <div className="flex items-center justify-between text-sm py-2.5 border-b border-white/5">
+        <span className="text-white/80">{label}</span>
+        <span className="text-emerald-400 text-xs font-medium">Included</span>
+      </div>
+    );
+  }
+
+  if (baseValue === null) {
+    return (
+      <div className="py-2.5 border-b border-white/5">
+        <div className="flex items-center justify-between text-sm">
+          <label className="flex items-center gap-2.5 text-white/80 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={included}
+              onChange={(e) => onToggle(e.target.checked)}
+              className="accent-cyan-400 w-4 h-4"
+            />
+            {label}
+          </label>
+          {included ? (
+            <MoneyInput value={value} onChange={onChange} step={100} size="sm" />
+          ) : (
+            <span className="text-gray-secondary text-xs">Not Included</span>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between text-sm py-2.5 border-b border-white/5">
+      <span className="text-white/80">{label}</span>
+      <MoneyInput value={value} onChange={onChange} step={100} size="sm" />
+    </div>
+  );
+}
+
+function getDefaults(plan) {
+  return {
+    domain: Math.round((plan.domain[0] + plan.domain[1]) / 2),
+    hosting: Math.round((plan.hosting[0] + plan.hosting[1]) / 2),
+    uiux: plan.uiux,
+    frontend: plan.frontend,
+    backend: plan.backend ?? 12000,
+    database: plan.database ?? 3000,
+    seo: plan.seo ?? 500,
+    includeBackend: plan.backend !== null,
+    includeDatabase: plan.database !== null,
+    includeSeo: plan.seo !== null,
+    includeMaintenance: false,
+  };
+}
+
 export default function Pricing() {
   const [selectedKey, setSelectedKey] = useState("standard");
-  const [domainValue, setDomainValue] = useState({});
-  const [hostingValue, setHostingValue] = useState({});
-  const [includeMaintenance, setIncludeMaintenance] = useState(false);
+  const [overrides, setOverrides] = useState({});
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const plan = PLANS.find((p) => p.key === selectedKey);
+  const state = overrides[plan.key] ?? getDefaults(plan);
 
-  const domain = domainValue[plan.key] ?? Math.round((plan.domain[0] + plan.domain[1]) / 2);
-  const hosting = hostingValue[plan.key] ?? Math.round((plan.hosting[0] + plan.hosting[1]) / 2);
+  const patch = (fields) =>
+    setOverrides((o) => ({
+      ...o,
+      [plan.key]: { ...(o[plan.key] ?? getDefaults(plan)), ...fields },
+    }));
 
-  const total = useMemo(() => {
-    let sum = domain + hosting + plan.uiux + plan.frontend;
-    if (plan.backend) sum += plan.backend;
-    if (plan.database) sum += plan.database;
-    if (plan.seo) sum += plan.seo;
-    if (includeMaintenance) sum += plan.maintenance;
-    return sum;
-  }, [domain, hosting, plan, includeMaintenance]);
+  const total =
+    state.domain +
+    state.hosting +
+    state.uiux +
+    state.frontend +
+    (state.includeBackend ? state.backend : 0) +
+    (state.includeDatabase ? state.database : 0) +
+    (state.includeSeo ? state.seo : 0) +
+    (state.includeMaintenance ? plan.maintenance : 0);
+
+  const animatedTotal = useAnimatedNumber(total);
 
   const startingPrice = (p) =>
     p.domain[0] + p.hosting[0] + p.uiux + p.frontend + (p.backend || 0) + (p.database || 0) + (p.seo || 0);
@@ -121,47 +286,60 @@ export default function Pricing() {
   return (
     <section id="pricing" className="relative bg-transparent py-28 lg:py-36">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        {/* heading */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-center mb-16 print:hidden"
+          className="text-center mb-16"
         >
           <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-cyan-400/25 bg-cyan-400/5 text-cyan-400 text-xs font-mono tracking-wide mb-6">
             TRANSPARENT PRICING
           </span>
           <h2 className="font-display font-bold text-3xl sm:text-4xl">Pick your engagement</h2>
           <p className="mt-3 text-gray-secondary max-w-lg mx-auto">
-            Every project is different — select a tier, tune the ranges, and get a live estimate.
+            Every project is different — select a tier, type any figure you like, and watch the estimate update live.
           </p>
         </motion.div>
 
-        {/* plan selector cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-14 print:hidden">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-14">
           {PLANS.map((p) => {
             const active = p.key === selectedKey;
+            const Icon = PLAN_META[p.key].icon;
+            const accent = PLAN_META[p.key].color;
             return (
               <motion.button
                 key={p.key}
                 onClick={() => setSelectedKey(p.key)}
-                whileHover={{ y: -4 }}
+                whileHover={{ y: -6 }}
                 whileTap={{ scale: 0.98 }}
-                className={`relative text-left rounded-2xl border p-6 transition-colors ${
+                transition={{ duration: 0.2 }}
+                className={`relative text-left rounded-2xl border p-6 overflow-hidden transition-colors ${
                   active
-                    ? "border-cyan-400 bg-cyan-400/5 shadow-[0_0_28px_rgba(34,211,238,0.25)]"
+                    ? "border-cyan-400 bg-cyan-400/[0.07]"
                     : "border-white/10 bg-charcoal/30 hover:border-cyan-400/30"
                 }`}
+                style={active ? { boxShadow: `0 0 32px ${accent}33` } : undefined}
               >
+                {p.popular && (
+                  <span className="absolute top-0 right-0 bg-cyan-400 text-black text-[10px] font-bold tracking-wide px-3 py-1 rounded-bl-lg">
+                    MOST POPULAR
+                  </span>
+                )}
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 border"
+                  style={{ backgroundColor: `${accent}1A`, borderColor: `${accent}40`, color: accent }}
+                >
+                  <Icon size={20} />
+                </div>
                 {active && (
                   <span className="absolute top-4 right-4 w-5 h-5 rounded-full bg-cyan-400 flex items-center justify-center">
                     <Check size={12} className="text-black" />
                   </span>
                 )}
                 <h3 className="font-display font-bold text-lg mb-1">{p.name}</h3>
-                <p className="text-xs text-gray-secondary mb-4">{p.tagline}</p>
-                <p className="text-2xl font-display font-bold text-cyan-400">
+                <p className="text-xs text-gray-secondary mb-4 leading-relaxed">{p.tagline}</p>
+                <p className="text-2xl font-display font-bold" style={{ color: accent }}>
                   {currency(startingPrice(p))}
                   <span className="text-xs text-gray-secondary font-body font-normal"> starting</span>
                 </p>
@@ -170,7 +348,6 @@ export default function Pricing() {
           })}
         </div>
 
-        {/* selected plan breakdown + estimator */}
         <AnimatePresence mode="wait">
           <motion.div
             key={plan.key}
@@ -178,75 +355,73 @@ export default function Pricing() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.35 }}
-            className="grid lg:grid-cols-[1.3fr_1fr] gap-8 print:hidden"
+            className="grid lg:grid-cols-[1.3fr_1fr] gap-8"
           >
-            {/* line items */}
             <div className="rounded-2xl border border-cyan-400/15 bg-charcoal/30 p-8">
               <h3 className="font-display font-bold text-xl mb-1">{plan.name} Plan</h3>
-              <p className="text-sm text-gray-secondary mb-8">{plan.tagline}</p>
+              <p className="text-sm text-gray-secondary mb-8">{plan.tagline} — every figure below is editable.</p>
 
-              <div className="mb-6">
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-white/80">Domain</span>
-                  <span className="text-cyan-400 font-semibold">{currency(domain)} / yr</span>
-                </div>
-                <input
-                  type="range"
-                  min={plan.domain[0]}
-                  max={plan.domain[1]}
-                  step={10}
-                  value={domain}
-                  onChange={(e) => setDomainValue((v) => ({ ...v, [plan.key]: Number(e.target.value) }))}
-                  className="w-full accent-cyan-400"
+              <MoneyField
+                label="Domain"
+                value={state.domain}
+                onChange={(v) => patch({ domain: v })}
+                min={plan.domain[0]}
+                max={plan.domain[1]}
+                step={10}
+              />
+              <MoneyField
+                label="Hosting"
+                value={state.hosting}
+                onChange={(v) => patch({ hosting: v })}
+                min={plan.hosting[0]}
+                max={plan.hosting[1]}
+                step={50}
+              />
+              <MoneyField
+                label="UI/UX Design"
+                value={state.uiux}
+                onChange={(v) => patch({ uiux: v })}
+                min={0}
+                max={plan.uiux * 2}
+                step={50}
+              />
+              <MoneyField
+                label="Frontend Development"
+                value={state.frontend}
+                onChange={(v) => patch({ frontend: v })}
+                min={0}
+                max={plan.frontend * 2}
+                step={100}
+              />
+
+              <div className="mt-2">
+                <CostRow
+                  label="Backend Development"
+                  baseValue={plan.backend}
+                  value={state.backend}
+                  included={state.includeBackend}
+                  onToggle={(v) => patch({ includeBackend: v })}
+                  onChange={(v) => patch({ backend: v })}
+                />
+                <CostRow
+                  label="Database Setup"
+                  baseValue={plan.database}
+                  value={state.database}
+                  included={state.includeDatabase}
+                  onToggle={(v) => patch({ includeDatabase: v })}
+                  onChange={(v) => patch({ database: v })}
+                />
+                <CostRow
+                  label="SEO Setup"
+                  baseValue={plan.seo}
+                  value={state.seo}
+                  included={state.includeSeo}
+                  onToggle={(v) => patch({ includeSeo: v })}
+                  onChange={(v) => patch({ seo: v })}
                 />
               </div>
 
-              <div className="mb-6">
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-white/80">Hosting</span>
-                  <span className="text-cyan-400 font-semibold">{currency(hosting)} / yr</span>
-                </div>
-                <input
-                  type="range"
-                  min={plan.hosting[0]}
-                  max={plan.hosting[1]}
-                  step={50}
-                  value={hosting}
-                  onChange={(e) => setHostingValue((v) => ({ ...v, [plan.key]: Number(e.target.value) }))}
-                  className="w-full accent-cyan-400"
-                />
-              </div>
-
-              <ul className="space-y-3 text-sm mb-6">
-                <li className="flex justify-between">
-                  <span className="text-white/80">UI/UX Design</span>
-                  <span>{currency(plan.uiux)}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="text-white/80">Frontend Development</span>
-                  <span>{currency(plan.frontend)}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="text-white/80">Backend Development</span>
-                  <span>{plan.backend ? currency(plan.backend) : <span className="text-gray-secondary">Not Included</span>}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="text-white/80">Database Setup</span>
-                  <span>
-                    {plan.database === null
-                      ? <span className="text-gray-secondary">Not Included</span>
-                      : plan.database === 0
-                      ? "Included"
-                      : currency(plan.database)}
-                  </span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="text-white/80">SEO Setup</span>
-                  <span>{plan.seo ? currency(plan.seo) : <span className="text-gray-secondary">Not Included</span>}</span>
-                </li>
-              </ul>
-
-              <ul className="grid sm:grid-cols-2 gap-3 text-xs text-gray-secondary border-t border-white/10 pt-6">
+              <ul className="grid sm:grid-cols-2 gap-3 text-xs text-gray-secondary border-t border-white/10 pt-6 mt-4">
                 {DESCRIPTIVE_ITEMS.map((item) => (
                   <li key={item.key} className="flex justify-between gap-2">
                     <span>{item.label}</span>
@@ -255,44 +430,53 @@ export default function Pricing() {
                 ))}
               </ul>
 
-              <label className="flex items-center gap-3 mt-6 pt-6 border-t border-white/10 cursor-pointer text-sm">
-                <input
-                  type="checkbox"
-                  checked={includeMaintenance}
-                  onChange={(e) => setIncludeMaintenance(e.target.checked)}
-                  className="accent-cyan-400 w-4 h-4"
-                />
-                <span className="text-white/80">
-                  Add Annual Maintenance — <span className="text-cyan-400">{currency(plan.maintenance)}/yr</span>
+              <label className="flex items-center justify-between gap-3 mt-6 pt-6 border-t border-white/10 cursor-pointer text-sm">
+                <span className="flex items-center gap-2.5 text-white/80">
+                  <input
+                    type="checkbox"
+                    checked={state.includeMaintenance}
+                    onChange={(e) => patch({ includeMaintenance: e.target.checked })}
+                    className="accent-cyan-400 w-4 h-4"
+                  />
+                  Add Annual Maintenance
                 </span>
+                <span className="text-cyan-400 font-semibold">{currency(plan.maintenance)}/yr</span>
               </label>
             </div>
 
-            {/* estimate summary */}
-            <div className="rounded-2xl border border-cyan-400/25 bg-linear-to-b from-cyan-400/10 to-transparent p-8 flex flex-col">
-              <h4 className="text-xs font-mono tracking-wide text-cyan-400 mb-2">ESTIMATED TOTAL</h4>
-              <p className="font-display font-bold text-4xl mb-1">{currency(total)}</p>
-              <p className="text-xs text-gray-secondary mb-8">First-year estimate, inclusive of selected add-ons</p>
+            <div className="rounded-2xl border border-cyan-400/25 bg-gradient-to-b from-cyan-400/10 to-transparent p-8 flex flex-col relative overflow-hidden">
+              <div className="absolute -top-16 -right-16 w-48 h-48 bg-cyan-400/10 rounded-full blur-[70px] pointer-events-none" />
 
-              <ul className="space-y-2 text-sm text-gray-secondary mb-8">
-                <li className="flex justify-between"><span>Domain + Hosting</span><span>{currency(domain + hosting)}</span></li>
+              <h4 className="text-xs font-mono tracking-wide text-cyan-400 mb-2 relative">ESTIMATED TOTAL</h4>
+              <p className="font-display font-bold text-4xl mb-1 relative">{currency(animatedTotal)}</p>
+              <p className="text-xs text-gray-secondary mb-8 relative">First-year estimate, inclusive of selected add-ons</p>
+
+              <ul className="space-y-2 text-sm text-gray-secondary mb-8 relative">
+                <li className="flex justify-between"><span>Domain + Hosting</span><span>{currency(state.domain + state.hosting)}</span></li>
                 <li className="flex justify-between">
                   <span>Design & Development</span>
-                  <span>{currency(plan.uiux + plan.frontend + (plan.backend || 0) + (plan.database || 0))}</span>
+                  <span>
+                    {currency(
+                      state.uiux +
+                        state.frontend +
+                        (state.includeBackend ? state.backend : 0) +
+                        (state.includeDatabase ? state.database : 0)
+                    )}
+                  </span>
                 </li>
-                <li className="flex justify-between"><span>SEO</span><span>{plan.seo ? currency(plan.seo) : "—"}</span></li>
-                <li className="flex justify-between"><span>Maintenance</span><span>{includeMaintenance ? currency(plan.maintenance) : "—"}</span></li>
+                <li className="flex justify-between"><span>SEO</span><span>{state.includeSeo ? currency(state.seo) : "—"}</span></li>
+                <li className="flex justify-between"><span>Maintenance</span><span>{state.includeMaintenance ? currency(plan.maintenance) : "—"}</span></li>
               </ul>
 
               <motion.button
                 onClick={() => window.print()}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="mt-auto inline-flex items-center justify-center gap-2 bg-cyan-400 text-black font-semibold text-sm px-6 py-3 rounded-full"
+                className="mt-auto inline-flex items-center justify-center gap-2 bg-cyan-400 text-black font-semibold text-sm px-6 py-3 rounded-full relative"
               >
                 <Download size={16} /> Download Estimate (PDF)
               </motion.button>
-              <p className="text-[11px] text-gray-secondary text-center mt-3">
+              <p className="text-[11px] text-gray-secondary text-center mt-3 relative">
                 Opens your browser's print dialog — choose "Save as PDF" as the destination.
               </p>
             </div>
@@ -300,15 +484,18 @@ export default function Pricing() {
         </AnimatePresence>
       </div>
 
-      {/* ---------- PRINT-ONLY QUOTE SHEET ---------- */}
-      <div id="print-quote" className="hidden print:block print:bg-white print:text-black print:p-12">
-        <PrintQuote plan={plan} domain={domain} hosting={hosting} includeMaintenance={includeMaintenance} total={total} />
-      </div>
+      {mounted &&
+        createPortal(
+          <div id="print-quote" className="hidden print:block print:bg-white print:text-black print:p-12">
+            <PrintQuote plan={plan} state={state} total={total} />
+          </div>,
+          document.body
+        )}
     </section>
   );
 }
 
-function PrintQuote({ plan, domain, hosting, includeMaintenance, total }) {
+function PrintQuote({ plan, state, total }) {
   const date = new Date().toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" });
   return (
     <div className="font-sans text-black max-w-2xl mx-auto">
@@ -325,24 +512,36 @@ function PrintQuote({ plan, domain, hosting, includeMaintenance, total }) {
 
       <table className="w-full text-sm border-collapse mb-6">
         <tbody>
-          <Row label="Domain" value={`\u20b9${domain.toLocaleString("en-IN")} / yr`} />
-          <Row label="Hosting" value={`\u20b9${hosting.toLocaleString("en-IN")} / yr`} />
+          <Row label="Domain" value={`\u20b9${state.domain.toLocaleString("en-IN")} / yr`} />
+          <Row label="Hosting" value={`\u20b9${state.hosting.toLocaleString("en-IN")} / yr`} />
           <Row label="SSL Certificate" value={plan.ssl} />
-          <Row label="UI/UX Design" value={`\u20b9${plan.uiux.toLocaleString("en-IN")}`} />
-          <Row label="Frontend Development" value={`\u20b9${plan.frontend.toLocaleString("en-IN")}`} />
-          <Row label="Backend Development" value={plan.backend ? `\u20b9${plan.backend.toLocaleString("en-IN")}` : "Not Included"} />
+          <Row label="UI/UX Design" value={`\u20b9${state.uiux.toLocaleString("en-IN")}`} />
+          <Row label="Frontend Development" value={`\u20b9${state.frontend.toLocaleString("en-IN")}`} />
+          <Row
+            label="Backend Development"
+            value={state.includeBackend ? `\u20b9${state.backend.toLocaleString("en-IN")}` : "Not Included"}
+          />
           <Row
             label="Database Setup"
-            value={plan.database === null ? "Not Included" : plan.database === 0 ? "Included" : `\u20b9${plan.database.toLocaleString("en-IN")}`}
+            value={
+              plan.database === 0
+                ? "Included"
+                : state.includeDatabase
+                ? `\u20b9${state.database.toLocaleString("en-IN")}`
+                : "Not Included"
+            }
           />
           <Row label="API Integration" value={plan.api} />
-          <Row label="SEO Setup" value={plan.seo ? `\u20b9${plan.seo.toLocaleString("en-IN")}` : "Not Included"} />
+          <Row label="SEO Setup" value={state.includeSeo ? `\u20b9${state.seo.toLocaleString("en-IN")}` : "Not Included"} />
           <Row label="Testing & QA" value={plan.testing} />
           <Row label="Deployment" value={plan.deployment} />
           <Row label="Security" value={plan.security} />
           <Row label="Third-Party Integrations" value={plan.thirdParty} />
           <Row label="Content Upload" value={plan.content} />
-          <Row label="Maintenance (Annual, optional)" value={includeMaintenance ? `\u20b9${plan.maintenance.toLocaleString("en-IN")}` : "Not selected"} />
+          <Row
+            label="Maintenance (Annual, optional)"
+            value={state.includeMaintenance ? `\u20b9${plan.maintenance.toLocaleString("en-IN")}` : "Not selected"}
+          />
         </tbody>
       </table>
 
