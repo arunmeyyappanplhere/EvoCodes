@@ -21,6 +21,10 @@ const serviceModel = new mongoose.Schema({
     type: String,
     required: true,
   },
+  serviceTechStacks: {
+    type: Array,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("services", serviceModel);
