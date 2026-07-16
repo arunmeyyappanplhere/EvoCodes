@@ -18,7 +18,7 @@ const projectModel = new mongoose.Schema({
         require : true
     },
     projectSectors : {
-        type : String,
+        type : Array,
         require : true
     },
     projectSiteLink : {
