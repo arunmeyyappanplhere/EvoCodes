@@ -1,106 +1,75 @@
-import { useRef, useMemo, useState } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { useRef, useState } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
-// Wireframe icosahedron core that reacts to mouse position with a tilt,
-// plus a slow independent auto-rotation so it always feels alive.
+// Wireframe icosahedron core that tumbles through a full 360° rotation on
+// every axis continuously, with a subtle pointer-driven parallax layered on
+// top (via a separate wrapper) so it still feels responsive to the mouse.
 function CoreShape() {
-  const groupRef = useRef()
+  const tiltRef = useRef()
+  const spinRef = useRef()
   const innerRef = useRef()
-  const { viewport } = useThree()
   const target = useRef({ x: 0, y: 0 })
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const t = state.clock.getElapsedTime()
 
-    // Smoothly ease toward pointer-driven tilt
-    target.current.x = state.pointer.y * 0.4
-    target.current.y = state.pointer.x * 0.5
+    // Subtle pointer parallax on the outer wrapper — never caps rotation,
+    // just nudges the tumble slightly toward the cursor.
+    target.current.x = state.pointer.y * 0.25
+    target.current.y = state.pointer.x * 0.3
 
-    if (groupRef.current) {
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(
-        groupRef.current.rotation.x,
+    if (tiltRef.current) {
+      tiltRef.current.rotation.x = THREE.MathUtils.lerp(
+        tiltRef.current.rotation.x,
         target.current.x,
         0.04
       )
-      groupRef.current.rotation.y +=
-        0.0025 + (target.current.y - groupRef.current.rotation.y) * 0.0015
-      groupRef.current.position.y = Math.sin(t * 0.6) * 0.15
+      tiltRef.current.rotation.y = THREE.MathUtils.lerp(
+        tiltRef.current.rotation.y,
+        target.current.y,
+        0.04
+      )
+      tiltRef.current.position.y = Math.sin(t * 0.6) * 0.15
+    }
+
+    // Continuous full tumble on all three axes — completes real 360°
+    // rotations over time instead of settling toward a fixed tilt.
+    if (spinRef.current) {
+      spinRef.current.rotation.x += delta * 0.22
+      spinRef.current.rotation.y += delta * 0.31
+      spinRef.current.rotation.z += delta * 0.13
     }
     if (innerRef.current) {
-      innerRef.current.rotation.x -= 0.003
-      innerRef.current.rotation.z += 0.002
+      innerRef.current.rotation.x -= delta * 0.35
+      innerRef.current.rotation.z += delta * 0.22
     }
   })
 
   return (
-    <group ref={groupRef}>
-      {/* Outer wireframe icosahedron */}
-      <mesh>
-        <icosahedronGeometry args={[1.6, 1]} />
-        <meshBasicMaterial color="#22D3EE" wireframe transparent opacity={0.55} />
-      </mesh>
-      {/* Inner solid glowing core */}
-      <mesh ref={innerRef} scale={0.55}>
-        <icosahedronGeometry args={[1.6, 0]} />
-        <meshStandardMaterial
-          color="#22D3EE"
-          emissive="#22D3EE"
-          emissiveIntensity={1.4}
-          transparent
-          opacity={0.9}
-          wireframe
-        />
-      </mesh>
-      {/* Core light */}
-      <pointLight color="#22D3EE" intensity={8} distance={6} />
+    <group ref={tiltRef}>
+      <group ref={spinRef}>
+        {/* Outer wireframe icosahedron */}
+        <mesh>
+          <icosahedronGeometry args={[1.6, 1]} />
+          <meshBasicMaterial color="#22D3EE" wireframe transparent opacity={0.55} />
+        </mesh>
+        {/* Inner solid glowing core */}
+        <mesh ref={innerRef} scale={0.55}>
+          <icosahedronGeometry args={[1.6, 0]} />
+          <meshStandardMaterial
+            color="#22D3EE"
+            emissive="#22D3EE"
+            emissiveIntensity={1.4}
+            transparent
+            opacity={0.9}
+            wireframe
+          />
+        </mesh>
+        {/* Core light */}
+        <pointLight color="#22D3EE" intensity={8} distance={6} />
+      </group>
     </group>
-  )
-}
-
-// Ambient orbiting particle field representing data / neural signal
-function ParticleField() {
-  const pointsRef = useRef()
-  const count = 220
-
-  const positions = useMemo(() => {
-    const arr = new Float32Array(count * 3)
-    for (let i = 0; i < count; i++) {
-      const radius = 2.4 + Math.random() * 1.8
-      const theta = Math.random() * Math.PI * 2
-      const phi = Math.acos(2 * Math.random() - 1)
-      arr[i * 3] = radius * Math.sin(phi) * Math.cos(theta)
-      arr[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta)
-      arr[i * 3 + 2] = radius * Math.cos(phi)
-    }
-    return arr
-  }, [])
-
-  useFrame((state) => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.y = state.clock.getElapsedTime() * 0.05
-      pointsRef.current.rotation.x = state.clock.getElapsedTime() * 0.02
-    }
-  })
-
-  return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.035}
-        color="#67E8F9"
-        transparent
-        opacity={0.75}
-        sizeAttenuation
-      />
-    </points>
   )
 }
 
@@ -144,7 +113,6 @@ export default function NeuralCore() {
       >
         <ambientLight intensity={0.2} />
         <CoreShape />
-        <ParticleField />
         <OrbitRings />
       </Canvas>
 
