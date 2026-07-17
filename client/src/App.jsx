@@ -10,6 +10,7 @@ import CTA from './components/CTA.jsx'
 import Footer from './components/Footer.jsx'
 import Contact from "./Components/Contact/Contact.jsx"
 import Pricing from './Components/Pricing.jsx'
+
 import About from './Components/About.jsx'
 export default function App() {
   return (
@@ -24,6 +25,8 @@ export default function App() {
       <main>
         <Hero />
         <Stats />
+        {/* Services section still exposes id="services" internally,
+            so Navbar's #services anchor link keeps working unchanged. */}
         <Services />
         <DevWorkflow />
         <Projects />
