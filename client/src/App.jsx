@@ -10,6 +10,7 @@ import CTA from './components/CTA.jsx'
 import Footer from './components/Footer.jsx'
 import Contact from "./Components/Contact/Contact.jsx"
 import Pricing from './Components/Pricing.jsx'
+import About from './Components/About.jsx'
 export default function App() {
   return (
     // overflow-x:hidden lives on body (see index.css) — NOT here.
@@ -30,6 +31,7 @@ export default function App() {
         <CTA />
         <Pricing/>
         <Contact/>
+        <About/>
       </main>
       <Footer />
     </div>
