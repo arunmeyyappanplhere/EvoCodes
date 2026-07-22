@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { NavLink } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
+import logo from "/public/evo-codes-logo.jpeg"
 
 const links = [
   { label: 'Home', to: '/' },
@@ -45,8 +46,24 @@ export default function Navbar() {
       }`}
     >
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 lg:px-10 py-5">
-        <NavLink to="/" className="font-display font-bold text-xl tracking-tight text-gradient">
-          Evo Codes
+        <NavLink to="/" className="flex items-center gap-2.5 shrink-0">
+          <motion.img
+            src={logo}
+            alt="Evo Codes logo"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover"
+            animate={{
+              boxShadow: [
+                '0 0 0px rgba(34,211,238,0)',
+                '0 0 16px rgba(34,211,238,0.55)',
+                '0 0 0px rgba(34,211,238,0)',
+              ],
+            }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+            whileHover={{ scale: 1.08, rotate: -4 }}
+          />
+          <span className="font-display font-bold text-xl tracking-tight text-gradient">
+            Evo Codes
+          </span>
         </NavLink>
 
         <ul className="hidden md:flex items-center gap-9 font-body text-sm text-gray-secondary">
