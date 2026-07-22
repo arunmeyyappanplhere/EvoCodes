@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import NeuralCore from "./NeuralCore.jsx";
 import TypewriterWords from "./TypewriterWords.jsx";
+import Services from "./Services.jsx";
+import { useNavigate } from "react-router-dom";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -13,6 +15,7 @@ const fadeUp = {
 };
 
 export default function Hero() {
+  const navi = useNavigate("/");
   return (
     <section className="relative overflow-hidden pt-40 pb-28 lg:pt-48 lg:pb-36">
       {/* ambient grid + glow backdrop */}
@@ -75,7 +78,7 @@ export default function Hero() {
             className="mt-9 flex flex-wrap items-center gap-4"
           >
             <motion.a
-              href="#projects"
+              onClick={() => navi("/services")}
               whileHover={{
                 scale: 1.04,
                 boxShadow: "0 0 28px rgba(34,211,238,0.5)",

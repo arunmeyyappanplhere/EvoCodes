@@ -1,5 +1,6 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
   const stats = [
@@ -35,6 +36,8 @@ const About = () => {
         "Your vision drives our development. We collaborate closely to turn ideas into reality.",
     },
   ];
+
+const navi = useNavigate()
 
   return (
     <section className="min-h-screen bg-[#050A0A] text-white py-24 px-6 relative overflow-hidden">
@@ -130,7 +133,7 @@ const About = () => {
           </p>
           <div className="mt-8 relative z-10 flex justify-center">
             <a
-              href="/contact"
+              onClick={()=>navi("/contact")}
               className="bg-cyan-400 text-black font-semibold px-8 py-4 rounded-xl hover:shadow-[0_0_25px_rgba(0,255,255,.45)] transition-all duration-300 hover:scale-105 inline-block"
             >
               Get In Touch →

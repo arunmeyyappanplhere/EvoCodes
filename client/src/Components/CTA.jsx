@@ -1,6 +1,9 @@
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function CTA() {
+  const navi = useNavigate();
+
   return (
     <section id="contact" className="max-w-7xl mx-auto px-6 lg:px-10 pb-28">
       <motion.div
@@ -25,16 +28,19 @@ export default function CTA() {
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
             <motion.a
-              href="#"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(34,211,238,0.55)' }}
+              onClick={() => navi("/contact")}
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0 0 30px rgba(34,211,238,0.55)",
+              }}
               whileTap={{ scale: 0.97 }}
               className="bg-cyan-400 text-black text-sm font-semibold px-7 py-3.5 rounded-full"
             >
               Schedule a Consultation
             </motion.a>
             <motion.a
-              href="#"
-              whileHover={{ scale: 1.03, borderColor: 'rgba(34,211,238,0.6)' }}
+              onClick={() => navi("/pricing")}
+              whileHover={{ scale: 1.03, borderColor: "rgba(34,211,238,0.6)" }}
               whileTap={{ scale: 0.97 }}
               className="border border-white/15 text-white text-sm font-medium px-7 py-3.5 rounded-full"
             >
@@ -44,5 +50,5 @@ export default function CTA() {
         </div>
       </motion.div>
     </section>
-  )
+  );
 }

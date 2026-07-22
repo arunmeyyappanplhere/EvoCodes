@@ -56,21 +56,30 @@ function StepCard({ step, index, total, progress }) {
   const glow = useTransform(progress, [start, end], [0, 1]);
   const boxShadow = useTransform(
     glow,
-    (v) => `0 0 ${v * 22}px rgba(34,211,238,${v * 0.55})`,
+    (v) => `0 0 ${v * 28}px rgba(34,211,238,${v * 0.65})`,
   );
-  const textColor = useTransform(
+  // Background fills solid cyan as the card comes into progress, instead of
+  // just glowing the border outline.
+  const backgroundColor = useTransform(
     progress,
     [start, end],
-    ["rgba(255,255,255,0.5)", "rgba(34,211,238,1)"],
+    ["rgba(34,211,238,0)", "rgba(34,211,238,1)"],
   );
 
   return (
     <div className="w-70 sm:w-90 lg:w-100 shrink-0">
       <motion.div
-        style={{ borderColor, boxShadow }}
-        className="w-16 h-16 rounded-full border-2 flex items-center justify-center font-mono text-base mb-7 bg-transparent"
+        style={{ borderColor, boxShadow, backgroundColor }}
+        className="w-16 h-16 rounded-full border-2 flex items-center justify-center font-mono text-base mb-7"
       >
-        <motion.span style={{ color: textColor }}>{step.id}</motion.span>
+        {/*
+          mix-blend-mode: difference inverts against whatever sits behind it.
+          White text over the transparent/near-black start state reads as
+          white, and once the circle fills solid cyan the same white text
+          inverts to a dark tone automatically — no separate color keyframe
+          needed, and contrast holds at every point in between.
+        */}
+        <span className="z-10 text-white">{step.id}</span>
       </motion.div>
       <h3 className="font-display font-bold text-2xl mb-3">{step.title}</h3>
       <p className="text-base text-gray-secondary leading-relaxed pr-6">
