@@ -14,6 +14,31 @@
   scroll-behavior: smooth;
 }
 
+/* Buttons & links: always show pointer cursor and remove the default
+   mobile/webkit tap-highlight rectangle + browser focus outline flash
+   that was showing on hover/tap over elements like the navbar CTA. */
+a,
+button,
+[role="button"],
+.cursor-pointer {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a:focus,
+button:focus,
+[role="button"]:focus {
+  outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid rgba(34, 211, 238, 0.6);
+  outline-offset: 2px;
+}
+
+
 @media print {
   body * {
     visibility: hidden;
