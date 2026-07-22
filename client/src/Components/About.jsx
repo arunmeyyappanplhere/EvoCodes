@@ -3,6 +3,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const About = () => {
+
+  document.title = "EVO CODES | About"
+
+
   const stats = [
     { number: "50+", label: "Projects Delivered" },
     { number: "99%", label: "Client Satisfaction" },

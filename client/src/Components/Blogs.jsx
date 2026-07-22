@@ -98,6 +98,9 @@ export default function Blogs() {
   // Supports being linked to as /blogs?category=Research from the home
   // page's "Latest Research" spotlight box, while still working as a plain
   // /blogs link for "Latest Blog".
+
+  document.title = "EVO CODES | Blogs"
+
   const activeCategory = searchParams.get('category') || 'All'
 
   const filtered = useMemo(() => {

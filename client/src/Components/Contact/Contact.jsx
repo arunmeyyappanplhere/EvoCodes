@@ -28,6 +28,8 @@ const Contact = () => {
     });
   };
 
+  document.title = "EVO CODES | Contact Us"
+
   return (
     <section className="min-h-screen bg-[#050A0A] text-white py-24 px-6 relative overflow-hidden">
      

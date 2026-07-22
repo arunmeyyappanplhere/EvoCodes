@@ -17,6 +17,7 @@ import Projects from "./Components/Projects.jsx"
 import Blogs from "./Components/Blogs.jsx"
 
 function Home() {
+  document.title = "EVO CODES | Home"
   return (
     <>
       <Hero />

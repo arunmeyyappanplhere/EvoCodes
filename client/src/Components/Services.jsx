@@ -171,8 +171,10 @@ function ServiceModal({ service, onClose }) {
 }
 
 export default function Services() {
-  const [active, setActive] = useState(null)
 
+  const [active, setActive] = useState(null)
+  document.title = "EVO CODES | Services"
+  
   return (
     <section id="services" className="max-w-7xl mx-auto px-6 lg:px-10 py-28">
       <div className="flex flex-col items-center text-center mb-16">

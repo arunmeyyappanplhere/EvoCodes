@@ -259,6 +259,9 @@ export default function Pricing() {
 
   useEffect(() => setMounted(true), []);
 
+  document.title = "EVO CODES | Pricing"
+ 
+ 
   const plan = PLANS.find((p) => p.key === selectedKey);
   const state = overrides[plan.key] ?? getDefaults(plan);
 

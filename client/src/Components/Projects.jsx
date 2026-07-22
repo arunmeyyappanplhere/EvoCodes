@@ -46,6 +46,10 @@ const PROJECTS = [
 const CATEGORIES = ['All', ...new Set(PROJECTS.map((p) => p.category))]
 
 function ProjectCard({ project, onOpen }) {
+
+  document.title = "EVO CODES | Projects"
+
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -97,6 +101,8 @@ export default function Projects() {
   const [active, setActive] = useState(null)
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('All')
+
+  document.title = "EVO CODES | Projects"
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
