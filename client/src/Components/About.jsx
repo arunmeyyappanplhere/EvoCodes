@@ -1,6 +1,8 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { User } from "lucide-react";
 
 const About = () => {
 
@@ -41,7 +43,31 @@ const About = () => {
     },
   ];
 
+  const team = [
+    {
+      name: "Admin Name",
+      role: "Founder & CEO",
+      image: "",
+    },
+    {
+      name: "Team Member",
+      role: "Lead Developer",
+      image: "",
+    },
+    {
+      name: "Team Member",
+      role: "UI/UX Designer",
+      image: "",
+    },
+    {
+      name: "Team Member",
+      role: "Project Manager",
+      image: "",
+    },
+  ];
+
 const navi = useNavigate()
+
 
   return (
     <section className="min-h-screen bg-[#050A0A] text-white py-24 px-6 relative overflow-hidden">
@@ -126,9 +152,46 @@ const navi = useNavigate()
           </div>
         </div>
 
+        {/* Team Section */}
+        <div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-center mb-12"
+          >
+            <span className="px-4 py-2 rounded-full border border-cyan-400 text-cyan-400 tracking-widest text-sm uppercase">
+              MEET THE TEAM
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold mt-6">
+              The People Behind <span className="text-cyan-400">EVO CODES</span>
+            </h2>
+            <p className="text-gray-400 mt-3">
+              A dedicated crew of builders, thinkers, and problem-solvers.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+            }}
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
+            {team.map((member, idx) => (
+              <TeamCard key={idx} {...member} />
+            ))}
+          </motion.div>
+        </div>
+
         {/* Call to Action Section */}
         <div className="bg-[#0B1112] border border-cyan-400/30 rounded-3xl p-10 md:p-16 text-center relative overflow-hidden backdrop-blur-lg">
           <div className="absolute inset-0 bg-cyan-500/5 pointer-events-none"></div>
+
           <h2 className="text-3xl md:text-5xl font-bold relative z-10">
             Ready to Evolve Your Digital Presence?
           </h2>
@@ -164,4 +227,34 @@ const ValueCard = ({ emoji, title, description }) => {
   );
 };
 
+const TeamCard = ({ name, role, image }) => {
+  return (
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, y: 30, scale: 0.96 },
+        show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.55, ease: "easeOut" } },
+      }}
+      whileHover={{ y: -6, borderColor: "rgba(34,211,238,0.5)" }}
+      transition={{ duration: 0.25 }}
+      className="bg-[#0B1112] border border-cyan-400/20 rounded-2xl p-6 flex flex-col items-center text-center"
+    >
+      <div className="w-24 h-24 rounded-full bg-cyan-400/10 border border-cyan-400/30 flex items-center justify-center overflow-hidden mb-5">
+        {image ? (
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <User className="w-10 h-10 text-cyan-400" />
+        )}
+      </div>
+      <h3 className="text-lg font-semibold">{name}</h3>
+      <p className="text-cyan-400 text-sm mt-1">{role}</p>
+    </motion.div>
+  );
+};
+
 export default About;
+
+
