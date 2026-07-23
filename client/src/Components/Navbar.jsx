@@ -76,7 +76,7 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <motion.div whileHover={{ scale: 1.04, boxShadow: '0 0 24px rgba(34,211,238,0.5)' }} whileTap={{ scale: 0.97 }} className="hidden md:inline-flex">
+        <motion.div whileHover={{ scale: 1.04, boxShadow: '0 0 24px rgba(34,211,238,0.5)', borderRadius: 30 }} whileTap={{ scale: 0.97 }} className="hidden md:inline-flex">
           <NavLink
             to="/contact"
             className="bg-cyan-400 text-black text-sm font-semibold px-5 py-2.5 rounded-full inline-block"

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { FaGithub, FaTwitter } from "react-icons/fa";
+import logo from "/public/evo-codes-logo.jpeg";
 
 const columns = [
   {
@@ -26,9 +27,25 @@ export default function Footer() {
     <footer className="border-t border-cyan-400/10 bg-charcoal/30">
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16 grid gap-12 md:grid-cols-4">
         <div>
-          <span className="font-display font-bold text-xl text-gradient">
-            Evo Codes
-          </span>
+          <div className="flex items-center gap-2.5">
+            {/* <motion.img
+              src={logo}
+              alt="Evo Codes logo"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover"
+              animate={{
+                boxShadow: [
+                  '0 0 0px rgba(34,211,238,0)',
+                  '0 0 16px rgba(34,211,238,0.55)',
+                  '0 0 0px rgba(34,211,238,0)',
+                ],
+              }}
+              transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+              whileHover={{ scale: 1.08, rotate: -4 }}
+            /> */}
+            <span className="font-display font-bold text-xl text-gradient">
+              Evo Codes
+            </span>
+          </div>
           <p className="mt-4 text-sm text-gray-secondary leading-relaxed max-w-xs">
             Pioneering the intersection of algorithmic intelligence and premium
             digital design.

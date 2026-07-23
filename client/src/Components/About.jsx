@@ -1,8 +1,40 @@
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { User } from "lucide-react";
+
+const CountUp = ({ end, suffix = "", duration = 2 }) => {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.5 });
+
+  useEffect(() => {
+    if (!isInView) return;
+
+    const numericEnd = parseInt(end) || 0;
+    const startTime = performance.now();
+    const startVal = 0;
+
+    const animate = (currentTime) => {
+      const elapsed = (currentTime - startTime) / 1000;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.floor(startVal + (numericEnd - startVal) * eased);
+      setCount(current);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setCount(numericEnd);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [isInView, end, duration]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
+};
 
 const About = () => {
 
@@ -10,10 +42,10 @@ const About = () => {
 
 
   const stats = [
-    { number: "50+", label: "Projects Delivered" },
-    { number: "99%", label: "Client Satisfaction" },
-    { number: "10+", label: "Expert Developers" },
-    { number: "24/7", label: "Dedicated Support" },
+    { number: "50+", label: "Projects Delivered", value: 50, suffix: "+" },
+    { number: "99%", label: "Client Satisfaction", value: 99, suffix: "%" },
+    { number: "10+", label: "Expert Developers", value: 10, suffix: "+" },
+    { number: "24/7", label: "Dedicated Support", value: 24, suffix: "/7" },
   ];
 
   const coreValues = [
@@ -45,22 +77,27 @@ const About = () => {
 
   const team = [
     {
-      name: "Admin Name",
+      name: "ARUN MEYYAPPAN",
       role: "Founder & CEO",
       image: "",
     },
     {
-      name: "Team Member",
-      role: "Lead Developer",
+      name: "ROHITH",
+      role: "Founder & CFOO",
       image: "",
     },
     {
-      name: "Team Member",
-      role: "UI/UX Designer",
+      name: "ASWIN",
+      role: "CTO & Lead Developer",
       image: "",
     },
     {
-      name: "Team Member",
+      name: "KHEERTHNA",
+      role: "CMO",
+      image: "",
+    },
+    {
+      name: "DEEPAK KUMAR",
       role: "Project Manager",
       image: "",
     },
@@ -102,7 +139,7 @@ const navi = useNavigate()
               className="bg-[#0B1112] border border-cyan-400/20 rounded-2xl p-6 text-center hover:border-cyan-400 transition duration-300"
             >
               <h3 className="text-4xl md:text-5xl font-bold text-cyan-400">
-                {stat.number}
+                <CountUp end={stat.value} suffix={stat.suffix} />
               </h3>
               <p className="text-gray-400 mt-2 font-medium">{stat.label}</p>
             </div>
@@ -180,7 +217,7 @@ const navi = useNavigate()
               hidden: {},
               show: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
             }}
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6"
           >
             {team.map((member, idx) => (
               <TeamCard key={idx} {...member} />
