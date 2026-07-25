@@ -1,13 +1,14 @@
 import { useState } from "react";
-
+import axios from 'axios';
 const Contact = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    subject: "",
-    message: "",
+ contactRequestSenderName: "",
+    contactRequestEmail: "",
+    phone: "",
+    contactRequestSubject: "",
+    contactRequestDesc: "",
   });
-
+const [status, setStatus] = useState({ loading: false, error: null, success: false });
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -15,18 +16,37 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatus({loading: true,error: null,success:false})
 
-    console.log(formData);
+    const contactData = {
+      contactRequestId: `CR-${Date.now()}`,
+      contactRequestSenderName: formData.contactRequestSenderName,
+      contactRequestEmail: formData.contactRequestEmail,
+      contactRequestSubject: formData.contactRequestSubject,
+      contactRequestDesc: formData.contactRequestDesc,
+      contactRequestDate: new Date().toLocaleDateString("en-US"),
+      contactRequestStatus: "NEW",
+    };
 
-    setFormData({
-      fullName: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
-  };
+    try{
+      const response= await axios.post("http://localhost:8000/contact",contactData)
+      if(response.status===201 || response.status===200){
+        setStatus({loading: false,error:null,success:true})
+        setFormData({
+          contactRequestSenderName: "",
+          contactRequestEmail: "",
+          phone: "",
+          contactRequestSubject: "",
+          contactRequestDesc: "",
+        })
+      }
+    }catch (err) {
+      const errorMessage = err.response?.data?.error || "Failed to send message. Please try again.";
+      setStatus({ loading: false, error: errorMessage, success: false });
+    }
+  }
 
   document.title = "EVO CODES | Contact Us"
 
