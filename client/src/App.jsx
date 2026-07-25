@@ -1,20 +1,20 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ParticleBackground from "./components/ParticleBackground.jsx";
-import Navbar from "./components/Navbar.jsx";
-import Hero from "./components/Hero.jsx";
-import Stats from "./components/Stats.jsx";
-import Services from "./components/Services.jsx";
-import DevWorkflow from "./components/DevWorkflow.jsx";
+import ParticleBackground from "./Components/ParticleBackground.jsx";
+import Navbar from "./Components/Navbar.jsx";
+import Hero from "./Components/Hero.jsx";
+import Stats from "./Components/Stats.jsx";
+import Services from "./Components/Services.jsx";
+import DevWorkflow from "./Components/DevWorkflow.jsx";
 import ProjectsonHome from "./Components/ProjectsOnHome.jsx";
-import Testimonials from "./components/Testimonials.jsx";
-import CTA from "./components/CTA.jsx";
-import Footer from "./components/Footer.jsx";
+import Testimonials from "./Components/Testimonials.jsx";
+import CTA from "./Components/CTA.jsx";
+import Footer from "./Components/Footer.jsx";
 import Contact from "./Components/Contact/Contact.jsx";
 import Pricing from "./Components/Pricing.jsx";
 import About from "./Components/About.jsx";
 import ServicesOnHome from "./Components/ServicesOnHome.jsx";
-import Projects from "./Components/Projects.jsx"
-import Blogs from "./Components/Blogs.jsx"
+import Projects from "./Components/Projects.jsx";
+import Blogs from "./Components/Blogs.jsx";
 
 function Home() {
   document.title = "EVO CODES | Home"
