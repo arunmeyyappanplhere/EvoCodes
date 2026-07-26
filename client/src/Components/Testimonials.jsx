@@ -60,7 +60,7 @@ export default function Testimonials() {
             variants={staggerContainer}
             className="grid gap-6 md:grid-cols-3"
           >
-            {TESTIMONIALS.map((t) => (
+            {TESTIMONIALS.slice(0,3).map((t) => (
               <motion.div
                 key={t.id}
                 variants={cardIn}

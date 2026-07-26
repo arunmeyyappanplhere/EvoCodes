@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { useFetch } from '../hooks/useFetch.js'
 import { transformService } from '../utils/transformers.js'
+import { chipStyle } from '../utils/color.js'
 import { LoadingState, ErrorState, EmptyState } from './DataState.jsx'
 import ServiceModal from './ServiceModal.jsx'
 
@@ -67,7 +68,8 @@ export default function Services() {
               className="card-border bg-charcoal rounded-2xl p-7 transition-colors flex flex-col"
             >
               <div
-                className={`w-11 h-11 rounded-xl border flex items-center justify-center mb-6 overflow-hidden ${s.color}`}
+                className="w-11 h-11 rounded-xl border flex items-center justify-center mb-6 overflow-hidden"
+                style={chipStyle(s.color)}
               >
                 {s.iconUrl ? (
                   <img src={s.iconUrl} alt="" className="w-full h-full object-cover" />

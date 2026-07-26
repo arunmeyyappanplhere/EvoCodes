@@ -10,7 +10,12 @@ export default function ServicesOnHome() {
   const [active, setActive] = useState(null);
 
   const transform = useCallback((s) => transformService(s), []);
-  const { data: services, loading, error, refetch } = useFetch("/services", { transform });
+  const {
+    data: services,
+    loading,
+    error,
+    refetch,
+  } = useFetch("/services", { transform });
 
   return (
     <section id="services" className="max-w-7xl mx-auto px-6 lg:px-10 py-28">
@@ -55,7 +60,7 @@ export default function ServicesOnHome() {
         <EmptyState message="No services published yet." />
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((s, i) => (
+          {services.slice(0, 6).map((s, i) => (
             <motion.div
               key={s.id}
               initial={{ opacity: 0, y: 30 }}
@@ -65,16 +70,42 @@ export default function ServicesOnHome() {
               whileHover={{ y: -6, borderColor: "rgba(34,211,238,0.4)" }}
               className="card-border bg-charcoal rounded-2xl p-7 transition-colors flex flex-col"
             >
-              <div
-                className={`w-11 h-11 rounded-xl border flex items-center justify-center mb-6 overflow-hidden ${s.color}`}
+              {(() => {
+                const isHex =
+                  typeof s.color === "string" && s.color.startsWith("#");
+                const iconStyle = isHex
+                  ? {
+                      backgroundColor: s.color + "1a",
+                      color: s.color,
+                      borderColor: s.color + "40",
+                    }
+                  : {};
+                const iconClass = isHex ? "" : s.color;
+                return (
+                  <div
+                    className={`w-11 h-11 rounded-xl border flex items-center justify-center mb-6 overflow-hidden ${iconClass}`}
+                    style={iconStyle}
+                  >
+                    {s.iconUrl ? (
+                      <img
+                        src={s.iconUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      s.icon && <s.icon size={20} />
+                    )}
+                  </div>
+                );
+              })()}
+              <h3
+                className="font-display font-semibold text-lg mb-2.5"
+                style={(() => {
+                  const isHex =
+                    typeof s.color === "string" && s.color.startsWith("#");
+                  return isHex ? { color: s.color } : {};
+                })()}
               >
-                {s.iconUrl ? (
-                  <img src={s.iconUrl} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  s.icon && <s.icon size={20} />
-                )}
-              </div>
-              <h3 className="font-display font-semibold text-lg mb-2.5">
                 {s.title}
               </h3>
               <p className="text-sm text-gray-secondary leading-relaxed mb-6 flex-1">

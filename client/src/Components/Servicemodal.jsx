@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
+import { hexToRgba, chipStyle, textStyle } from '../utils/color.js'
 
 export default function ServiceModal({ service, onClose }) {
   useEffect(() => {
@@ -44,8 +45,10 @@ export default function ServiceModal({ service, onClose }) {
             <X size={16} />
           </button>
 
+          {/* Icon -- themed via inline style from the hex color */}
           <div
-            className={`w-14 h-14 rounded-2xl border flex items-center justify-center mb-6 overflow-hidden ${service.color}`}
+            className="w-14 h-14 rounded-2xl border flex items-center justify-center mb-6 overflow-hidden"
+            style={chipStyle(service.color)}
           >
             {service.iconUrl ? (
               <img src={service.iconUrl} alt="" className="w-full h-full object-cover" />
@@ -58,7 +61,11 @@ export default function ServiceModal({ service, onClose }) {
             {service.head}
           </span>
 
-          <h3 className="font-display font-bold text-2xl mt-2 mb-4">
+          {/* Title -- themed text color */}
+          <h3
+            className="font-display font-bold text-2xl mt-2 mb-4"
+            style={textStyle(service.color)}
+          >
             {service.title}
           </h3>
 
@@ -68,14 +75,19 @@ export default function ServiceModal({ service, onClose }) {
 
           {service.stack.length > 0 && (
             <div>
-              <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-gray-secondary block mb-3">
+              <span className="text-[11px] font-mono uppercase tracking-[0.15em] block mb-3 text-gray-secondary">
                 Tech Stack
               </span>
               <div className="flex flex-wrap gap-2">
                 {service.stack.map((t) => (
                   <span
                     key={t}
-                    className="text-[11px] font-mono px-2.5 py-1.5 rounded-full border border-cyan-400/20 bg-cyan-400/5 text-cyan-400/90"
+                    className="text-[11px] font-mono px-2.5 py-1.5 rounded-full border"
+                    style={{
+                      color: service.color,
+                      borderColor: hexToRgba(service.color, 0.25),
+                      backgroundColor: hexToRgba(service.color, 0.08),
+                    }}
                   >
                     {t}
                   </span>

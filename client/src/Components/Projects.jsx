@@ -1,55 +1,44 @@
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowUpRight, Calendar, Tag, Search, X as XIcon } from 'lucide-react'
 import Modal from './Modal.jsx'
+import { useFetch } from '../hooks/useFetch.js'
 
-// Replace `image` with real asset paths (e.g. /projects/mega-vii.jpg) once
-// you have final artwork — placehold.co is just a stand-in so the grid
-// renders correctly out of the box.
-const PROJECTS = [
-  {
-    id: 'mega-vii',
-    title: 'Revolutionizing Data Intelligence for FinTech',
-    category: 'AI / FinTech',
-    date: 'March 2026',
-    image: 'https://placehold.co/900x600/0a0a0a/22d3ee?text=Mega+VII',
-    shortDesc:
-      'A real-time analysis engine processing millions of transactions per second.',
-    fullDesc:
-      'We built a proprietary real-time analysis engine that processes millions of transactions per second, powered by a custom-trained neural core for anomaly detection. The system ingests transaction streams from twelve regional payment rails, normalizes them through a unified event schema, and flags anomalous patterns within single-digit milliseconds of ingestion.\n\nOn the infrastructure side, we designed a horizontally-scalable pipeline built on event-sourced microservices, with a dedicated inference layer that runs the anomaly-detection core close to the data to avoid cross-region latency. The result: a 40% reduction in fraud-related false negatives and sub-100ms p99 detection latency at full production load.',
-    liveUrl: 'https://example.com',
-  },
-  {
-    id: 'lumina',
-    title: 'Lumina Mobile App',
-    category: 'IoT / Mobile',
-    date: 'January 2026',
-    image: 'https://placehold.co/900x600/0a0a0a/22d3ee?text=Lumina',
-    shortDesc: 'A modern IoT ecosystem control app for connected homes.',
-    fullDesc:
-      'Lumina unifies dozens of disparate smart-home protocols behind one clean, gesture-driven mobile interface. We built a custom device-discovery layer that speaks Matter, Zigbee, and legacy proprietary protocols simultaneously, then normalized everything into a single reactive state graph on the client.\n\nThe result is an app that feels instantaneous even when controlling twenty-plus devices at once, with offline-first local control that falls back gracefully when the cloud bridge is unreachable.',
-    liveUrl: 'https://example.com',
-  },
-  {
-    id: 'core-network',
-    title: 'Core Network v2',
-    category: 'Cloud Infrastructure',
-    date: 'November 2025',
-    image: 'https://placehold.co/900x600/0a0a0a/22d3ee?text=Core+Network',
-    shortDesc: 'A global cloud infrastructure overhaul built for elastic scale.',
-    fullDesc:
-      'Core Network v2 is a ground-up rebuild of a legacy monolithic backend into a globally-distributed, elastically-scaled service mesh. We re-architected the deployment topology around regional edge clusters with automated failover, cutting median global latency by 61% and enabling true zero-downtime blue-green releases across every region simultaneously.\n\nObservability was rebuilt in parallel — a unified tracing layer now gives full request-path visibility across every service boundary, which cut mean-time-to-resolution on production incidents from hours to minutes.',
-    liveUrl: 'https://example.com',
-  },
-]
+// Your project model stores `projectSectors` as an array (a project can span
+// multiple sectors), not a single `category` string like the old mock data
+// did. Everything below -- the category filter chips, the search, and the
+// card badge -- was adapted to work off that array instead of a single value.
 
-const CATEGORIES = ['All', ...new Set(PROJECTS.map((p) => p.category))]
+const PLACEHOLDER_IMAGE = 'https://placehold.co/900x600/0a0a0a/22d3ee?text=Project'
+
+function formatDate(value) {
+  if (!value) return null
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return null
+  return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+}
+
+// Maps a raw Mongo project doc -> the shape the UI below renders.
+function transformProject(doc) {
+  const sectors = Array.isArray(doc.projectSectors) ? doc.projectSectors : []
+  const desc = doc.projectDesc || ''
+
+  return {
+    id: doc.projectID || doc._id,
+    title: doc.projectName || 'Untitled Project',
+    sectors,
+    // Card badge just needs something short to display; full list still
+    // used for filtering/search.
+    categoryLabel: sectors[0] || 'General',
+    date: formatDate(doc.createdAt),
+    image: doc.projectCoverImg || PLACEHOLDER_IMAGE,
+    shortDesc: desc.length > 140 ? `${desc.slice(0, 140).trim()}…` : desc,
+    fullDesc: desc,
+    liveUrl: doc.projectSiteLink || null,
+  }
+}
 
 function ProjectCard({ project, onOpen }) {
-
-  document.title = "EVO CODES | Projects"
-
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -67,21 +56,23 @@ function ProjectCard({ project, onOpen }) {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-rich-black/70 via-transparent to-transparent" />
-        <a
-          href={project.liveUrl}
-          target="_blank"
-          rel="noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          aria-label={`Open ${project.title} live`}
-          className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm p-2 rounded-full text-white hover:text-cyan-400 hover:bg-black/70 transition-colors"
-        >
-          <ArrowUpRight size={16} />
-        </a>
+        {project.liveUrl && (
+          <a
+            href={project.liveUrl}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            aria-label={`Open ${project.title} live`}
+            className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm p-2 rounded-full text-white hover:text-cyan-400 hover:bg-black/70 transition-colors"
+          >
+            <ArrowUpRight size={16} />
+          </a>
+        )}
       </div>
 
       <div className="p-6">
         <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-cyan-400">
-          <Tag size={11} /> {project.category}
+          <Tag size={11} /> {project.categoryLabel}
         </span>
         <h3 className="font-display font-semibold text-lg mt-3 leading-snug">
           {project.title}
@@ -89,9 +80,11 @@ function ProjectCard({ project, onOpen }) {
         <p className="text-sm text-gray-secondary mt-2 leading-relaxed">
           {project.shortDesc}
         </p>
-        <p className="inline-flex items-center gap-1.5 text-xs text-gray-secondary mt-5 font-mono">
-          <Calendar size={12} /> {project.date}
-        </p>
+        {project.date && (
+          <p className="inline-flex items-center gap-1.5 text-xs text-gray-secondary mt-5 font-mono">
+            <Calendar size={12} /> {project.date}
+          </p>
+        )}
       </div>
     </motion.div>
   )
@@ -104,18 +97,28 @@ export default function Projects() {
 
   document.title = "EVO CODES | Projects"
 
+  const { data: projects, loading, error } = useFetch('/projects', {
+    transform: transformProject,
+  })
+
+  const categories = useMemo(() => {
+    const all = new Set()
+    projects.forEach((p) => p.sectors.forEach((s) => all.add(s)))
+    return ['All', ...all]
+  }, [projects])
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return PROJECTS.filter((p) => {
-      const matchesCategory = category === 'All' || p.category === category
+    return projects.filter((p) => {
+      const matchesCategory = category === 'All' || p.sectors.includes(category)
       const matchesQuery =
         !q ||
         p.title.toLowerCase().includes(q) ||
         p.shortDesc.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
+        p.sectors.some((s) => s.toLowerCase().includes(q))
       return matchesCategory && matchesQuery
     })
-  }, [query, category])
+  }, [projects, query, category])
 
   return (
     <section className="max-w-7xl mx-auto px-6 lg:px-10 pt-36 pb-28">
@@ -158,7 +161,7 @@ export default function Projects() {
       </div>
 
       <div className="flex flex-wrap justify-center gap-3 mb-14">
-        {CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setCategory(cat)}
@@ -173,18 +176,45 @@ export default function Projects() {
         ))}
       </div>
 
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="card-border rounded-2xl bg-charcoal overflow-hidden animate-pulse"
+            >
+              <div className="h-52 bg-white/5" />
+              <div className="p-6 space-y-3">
+                <div className="h-3 w-24 bg-white/5 rounded" />
+                <div className="h-5 w-3/4 bg-white/5 rounded" />
+                <div className="h-4 w-full bg-white/5 rounded" />
+                <div className="h-4 w-2/3 bg-white/5 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : error ? (
         <div className="text-center text-gray-secondary py-20">
-          <p>No projects match your search.</p>
-          <button
-            onClick={() => {
-              setQuery('')
-              setCategory('All')
-            }}
-            className="inline-flex items-center gap-1.5 mt-4 text-cyan-400 text-sm"
-          >
-            <XIcon size={14} /> Clear filters
-          </button>
+          <p>Couldn't load projects right now. Please try again shortly.</p>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center text-gray-secondary py-20">
+          <p>
+            {projects.length === 0
+              ? 'No projects to show yet.'
+              : 'No projects match your search.'}
+          </p>
+          {projects.length > 0 && (
+            <button
+              onClick={() => {
+                setQuery('')
+                setCategory('All')
+              }}
+              className="inline-flex items-center gap-1.5 mt-4 text-cyan-400 text-sm"
+            >
+              <XIcon size={14} /> Clear filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -204,26 +234,39 @@ export default function Projects() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-cyan-400">
-              <Tag size={11} /> {active.category}
-            </span>
+            <div className="flex flex-wrap gap-2">
+              {(active.sectors.length ? active.sectors : [active.categoryLabel]).map(
+                (s) => (
+                  <span
+                    key={s}
+                    className="inline-flex items-center gap-1.5 text-[11px] font-mono text-cyan-400"
+                  >
+                    <Tag size={11} /> {s}
+                  </span>
+                )
+              )}
+            </div>
             <h2 className="font-display font-bold text-2xl sm:text-3xl mt-3 mb-2 leading-snug">
               {active.title}
             </h2>
-            <p className="inline-flex items-center gap-1.5 text-xs text-gray-secondary font-mono mb-6">
-              <Calendar size={12} /> {active.date}
-            </p>
+            {active.date && (
+              <p className="inline-flex items-center gap-1.5 text-xs text-gray-secondary font-mono mb-6">
+                <Calendar size={12} /> {active.date}
+              </p>
+            )}
             <p className="text-gray-secondary leading-relaxed whitespace-pre-line">
               {active.fullDesc}
             </p>
-            <a
-              href={active.liveUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 mt-9 bg-cyan-400 text-black text-sm font-semibold px-5 py-2.5 rounded-full"
-            >
-              View Live <ArrowUpRight size={15} />
-            </a>
+            {active.liveUrl && (
+              <a
+                href={active.liveUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 mt-9 bg-cyan-400 text-black text-sm font-semibold px-5 py-2.5 rounded-full"
+              >
+                View Live <ArrowUpRight size={15} />
+              </a>
+            )}
           </div>
         )}
       </Modal>

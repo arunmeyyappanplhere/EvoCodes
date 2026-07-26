@@ -15,6 +15,14 @@ import {
   Lock,
   Cpu,
   Server,
+  BarChart3,
+  Monitor,
+  Network,
+  HardDrive,
+  Wifi,
+  Box,
+  Settings,
+  Terminal,
 } from 'lucide-react'
 
 // Extend this map with whatever icon names your admin panel lets people pick.
@@ -36,6 +44,14 @@ export const ICON_MAP = {
   Lock,
   Cpu,
   Server,
+  BarChart3,
+  Monitor,
+  Network,
+  HardDrive,
+  Wifi,
+  Box,
+  Settings,
+  Terminal,
 }
 
 export function resolveIcon(iconName) {
