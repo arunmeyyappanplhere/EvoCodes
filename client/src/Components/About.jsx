@@ -3,6 +3,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import { User } from "lucide-react";
+import ArunProfile from "/public/arun.jpeg"
+import AswinProfile from "/public/aswin.jpeg"
+import DeepakProfile from "/public/deepak.jpeg"
+import KheerthnaProfile from "/public/kheerthna.jpeg"
+import RohtihProfile from "/public/rohith.jpeg"
 
 const CountUp = ({ end, suffix = "", duration = 2 }) => {
   const [count, setCount] = useState(0);
@@ -79,27 +84,27 @@ const About = () => {
     {
       name: "ARUN MEYYAPPAN",
       role: "Founder & CEO",
-      image: "",
+      image: ArunProfile,
     },
     {
       name: "ROHITH",
       role: "Founder & CFOO",
-      image: "",
+      image: RohtihProfile,
     },
     {
       name: "ASWIN",
       role: "CTO & Lead Developer",
-      image: "",
+      image: AswinProfile,
     },
     {
       name: "KHEERTHNA",
       role: "CMO",
-      image: "",
+      image: KheerthnaProfile,
     },
     {
       name: "DEEPAK KUMAR",
       role: "Project Manager",
-      image: "",
+      image: DeepakProfile,
     },
   ];
 
