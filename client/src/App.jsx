@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ScrollToTop from "./Components/ScrollToTop.jsx";
 import ParticleBackground from "./Components/ParticleBackground.jsx";
 import Navbar from "./Components/Navbar.jsx";
 import Hero from "./Components/Hero.jsx";
@@ -45,6 +46,7 @@ function Layout({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />

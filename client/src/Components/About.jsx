@@ -1,13 +1,14 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
-import { User } from "lucide-react";
-import ArunProfile from "/public/arun.jpeg"
-import AswinProfile from "/public/aswin.jpeg"
-import DeepakProfile from "/public/deepak.jpeg"
-import KheerthnaProfile from "/public/kheerthna.jpeg"
-import RohtihProfile from "/public/rohith.jpeg"
+import { User, Target, Eye } from "lucide-react";
+import axios from "axios";
+
+import ArunProfile from "/public/arun.jpeg";
+import AswinProfile from "/public/aswin.jpeg";
+import DeepakProfile from "/public/deepak.jpeg";
+import KheerthnaProfile from "/public/kheerthna.jpeg";
+import RohtihProfile from "/public/rohith.jpeg";
 
 const CountUp = ({ end, suffix = "", duration = 2 }) => {
   const [count, setCount] = useState(0);
@@ -19,13 +20,12 @@ const CountUp = ({ end, suffix = "", duration = 2 }) => {
 
     const numericEnd = parseInt(end) || 0;
     const startTime = performance.now();
-    const startVal = 0;
 
     const animate = (currentTime) => {
       const elapsed = (currentTime - startTime) / 1000;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      const current = Math.floor(startVal + (numericEnd - startVal) * eased);
+      const current = Math.floor(numericEnd * eased);
       setCount(current);
 
       if (progress < 1) {
@@ -38,20 +38,83 @@ const CountUp = ({ end, suffix = "", duration = 2 }) => {
     requestAnimationFrame(animate);
   }, [isInView, end, duration]);
 
-  return <span ref={ref}>{count}{suffix}</span>;
+  return (
+    <span ref={ref}>
+      {count}
+      {suffix}
+    </span>
+  );
 };
 
 const About = () => {
+  const navi = useNavigate();
 
-  document.title = "EVO CODES | About"
+  // 1. Initialized as null so we know data hasn't arrived yet
+  const [statsData, setStatsData] = useState(null);
+  const [loadingStats, setLoadingStats] = useState(true);
 
+  useEffect(() => {
+    document.title = "EVO CODES | About";
 
-  const stats = [
-    { number: "50+", label: "Projects Delivered", value: 50, suffix: "+" },
-    { number: "99%", label: "Client Satisfaction", value: 99, suffix: "%" },
-    { number: "10+", label: "Expert Developers", value: 10, suffix: "+" },
-    { number: "24/7", label: "Dedicated Support", value: 24, suffix: "/7" },
-  ];
+    const fetchStats = async () => {
+      try {
+        const res1 = await axios.get(
+          "http://localhost:8000/api/testimonials/stats",
+        );
+        const res2 = await axios.get("http://localhost:8000/api/");
+        const { projects, employees } = res2.data;
+
+        const { averageRating } = res1.data;
+        console.log(projects, employees);
+        console.log(averageRating);
+
+        setStatsData({
+          totalProjects: projects ? projects.length : 0,
+          expertDevs: employees ? employees.length : 0,
+          supportHours: 24,
+          satisfaction: averageRating ? Math.round(averageRating * 20) : 99,
+        });
+      } catch (err) {
+        console.error("Failed to fetch stats from backend", err);
+        setStatsData({
+          totalProjects: 0,
+          expertDevs: 0,
+          supportHours: 24,
+          satisfaction: 99,
+        });
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  // 3. Map stats directly from backend data when loaded
+  const stats = statsData
+    ? [
+        {
+          label: "Projects Delivered",
+          value: statsData.totalProjects,
+          suffix: "+",
+        },
+        {
+          label: "Client Satisfaction",
+          value: statsData.satisfaction,
+          suffix: "%",
+        },
+        {
+          label: "Expert Developers",
+          value: statsData.expertDevs,
+          suffix: "+",
+        },
+        {
+          label: "Dedicated Support",
+          value: statsData.supportHours,
+          suffix: "/7",
+        },
+      ]
+    : [];
 
   const coreValues = [
     {
@@ -81,44 +144,19 @@ const About = () => {
   ];
 
   const team = [
-    {
-      name: "ARUN MEYYAPPAN",
-      role: "Founder & CEO",
-      image: ArunProfile,
-    },
-    {
-      name: "ROHITH",
-      role: "Founder & CFOO",
-      image: RohtihProfile,
-    },
-    {
-      name: "ASWIN",
-      role: "CTO & Lead Developer",
-      image: AswinProfile,
-    },
-    {
-      name: "KHEERTHNA",
-      role: "CMO",
-      image: KheerthnaProfile,
-    },
-    {
-      name: "DEEPAK KUMAR",
-      role: "Project Manager",
-      image: DeepakProfile,
-    },
+    { name: "ARUN MEYYAPPAN", role: "Founder & CEO", image: ArunProfile },
+    { name: "ROHITH", role: "Founder & CFOO", image: RohtihProfile },
+    { name: "ASWIN", role: "CTO & Lead Developer", image: AswinProfile },
+    { name: "KHEERTHNA", role: "CMO", image: KheerthnaProfile },
+    { name: "DEEPAK KUMAR", role: "Project Manager", image: DeepakProfile },
   ];
-
-const navi = useNavigate()
-
 
   return (
     <section className="min-h-screen bg-[#050A0A] text-white py-24 px-6 relative overflow-hidden">
-      {/* Background Glows */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto relative z-10 space-y-24">
-        
         {/* Header Section */}
         <div className="text-center">
           <span className="px-4 py-2 rounded-full border border-cyan-400 text-cyan-400 tracking-widest text-sm uppercase">
@@ -131,46 +169,66 @@ const navi = useNavigate()
           </h1>
 
           <p className="mt-5 text-gray-400 max-w-3xl mx-auto text-lg leading-relaxed">
-            At EVO CODES, we are a collective of passionate developers, designers, and innovators. 
-            We engineer high-impact digital experiences that help businesses evolve and dominate the modern tech landscape.
+            At EVO CODES, we are a collective of passionate developers,
+            designers, and innovators. We engineer high-impact digital
+            experiences that help businesses evolve and dominate the modern tech
+            landscape.
           </p>
         </div>
 
-        {/* Stats Grid */}
+        {/* Dynamic Stats Section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              className="bg-[#0B1112] border border-cyan-400/20 rounded-2xl p-6 text-center hover:border-cyan-400 transition duration-300"
-            >
-              <h3 className="text-4xl md:text-5xl font-bold text-cyan-400">
-                <CountUp end={stat.value} suffix={stat.suffix} />
-              </h3>
-              <p className="text-gray-400 mt-2 font-medium">{stat.label}</p>
-            </div>
-          ))}
+          {loadingStats
+            ? // Loading Skeletons
+              Array(4)
+                .fill(0)
+                .map((_, index) => (
+                  <div
+                    key={index}
+                    className="bg-[#0B1112] border border-cyan-400/20 rounded-2xl p-6 text-center animate-pulse"
+                  >
+                    <div className="h-10 w-24 bg-cyan-400/20 rounded mx-auto mb-3"></div>
+                    <div className="h-4 w-32 bg-gray-700/50 rounded mx-auto"></div>
+                  </div>
+                ))
+            : // Render Stats once backend data arrives
+              stats.map((stat, index) => (
+                <div
+                  key={index}
+                  className="bg-[#0B1112] border border-cyan-400/20 rounded-2xl p-6 text-center hover:border-cyan-400 transition duration-300"
+                >
+                  <h3 className="text-4xl md:text-5xl font-bold text-cyan-400">
+                    <CountUp
+                      key={stat.value}
+                      end={stat.value}
+                      suffix={stat.suffix}
+                    />
+                  </h3>
+                  <p className="text-gray-400 mt-2 font-medium">{stat.label}</p>
+                </div>
+              ))}
         </div>
 
         {/* Mission & Vision Section */}
         <div className="grid lg:grid-cols-2 gap-12 items-stretch">
           <div className="bg-[#0B1112] border border-cyan-400/20 rounded-3xl p-8 backdrop-blur-lg flex flex-col justify-between hover:border-cyan-400/40 transition duration-300">
             <div>
-              <span className="text-3xl">🎯</span>
+              <Target className="w-10 h-10 text-cyan-400" />
               <h2 className="text-3xl font-bold mt-4 mb-4">Our Mission</h2>
               <p className="text-gray-400 leading-relaxed text-lg">
-                To empower startups, enterprises, and visionary creators by engineering cut-throat, 
-                scalable, and user-centered software solutions that drive real-world transformation and growth.
+                Empowering businesses with scalable, user-focused software and
+                IoT that drives innovation and growth.
               </p>
             </div>
           </div>
 
           <div className="bg-[#0B1112] border border-cyan-400/20 rounded-3xl p-8 backdrop-blur-lg flex flex-col justify-between hover:border-cyan-400/40 transition duration-300">
             <div>
-              <span className="text-3xl">👁️</span>
+              <Eye className="w-10 h-10 text-cyan-400" />
               <h2 className="text-3xl font-bold mt-4 mb-4">Our Vision</h2>
               <p className="text-gray-400 leading-relaxed text-lg">
-                To become a global catalyst for software evolution, establishing industry standards 
-                for modern web architectures, intuitive user interfaces, and flawless execution.
+                Leading the future of digital innovation through reliable,
+                high-quality software solutions and IoT systems.
               </p>
             </div>
           </div>
@@ -220,7 +278,9 @@ const navi = useNavigate()
             viewport={{ once: true, amount: 0.2 }}
             variants={{
               hidden: {},
-              show: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+              show: {
+                transition: { staggerChildren: 0.15, delayChildren: 0.1 },
+              },
             }}
             className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6"
           >
@@ -238,65 +298,60 @@ const navi = useNavigate()
             Ready to Evolve Your Digital Presence?
           </h2>
           <p className="mt-4 text-gray-400 max-w-2xl mx-auto relative z-10 text-lg">
-            Let's collaborate to build something extraordinary. Get in touch with our engineering team today.
+            Let's collaborate to build something extraordinary. Get in touch
+            with our engineering team today.
           </p>
           <div className="mt-8 relative z-10 flex justify-center">
-            <a
-              onClick={()=>navi("/contact")}
-              className="bg-cyan-400 text-black font-semibold px-8 py-4 rounded-xl hover:shadow-[0_0_25px_rgba(0,255,255,.45)] transition-all duration-300 hover:scale-105 inline-block"
+            <button
+              onClick={() => navi("/contact")}
+              className="bg-cyan-400 text-black font-semibold px-8 py-4 rounded-xl hover:shadow-[0_0_25px_rgba(0,255,255,.45)] transition-all duration-300 hover:scale-105 inline-block cursor-pointer"
             >
               Get In Touch →
-            </a>
+            </button>
           </div>
         </div>
-
       </div>
     </section>
   );
 };
 
-const ValueCard = ({ emoji, title, description }) => {
-  return (
-    <div className="bg-[#0B1112] border border-cyan-400/20 rounded-2xl p-6 hover:border-cyan-400 transition duration-300 flex flex-col justify-between">
-      <div>
-        <div className="w-14 h-14 rounded-xl bg-cyan-400/10 flex items-center justify-center text-2xl mb-5">
-          {emoji}
-        </div>
-        <h3 className="text-xl font-semibold mb-2">{title}</h3>
-        <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
+const ValueCard = ({ emoji, title, description }) => (
+  <div className="bg-[#0B1112] border border-cyan-400/20 rounded-2xl p-6 hover:border-cyan-400 transition duration-300 flex flex-col justify-between">
+    <div>
+      <div className="w-14 h-14 rounded-xl bg-cyan-400/10 flex items-center justify-center text-2xl mb-5">
+        {emoji}
       </div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
     </div>
-  );
-};
+  </div>
+);
 
-const TeamCard = ({ name, role, image }) => {
-  return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 30, scale: 0.96 },
-        show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.55, ease: "easeOut" } },
-      }}
-      whileHover={{ y: -6, borderColor: "rgba(34,211,238,0.5)" }}
-      transition={{ duration: 0.25 }}
-      className="bg-[#0B1112] border border-cyan-400/20 rounded-2xl p-6 flex flex-col items-center text-center"
-    >
-      <div className="w-24 h-24 rounded-full bg-cyan-400/10 border border-cyan-400/30 flex items-center justify-center overflow-hidden mb-5">
-        {image ? (
-          <img
-            src={image}
-            alt={name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <User className="w-10 h-10 text-cyan-400" />
-        )}
-      </div>
-      <h3 className="text-lg font-semibold">{name}</h3>
-      <p className="text-cyan-400 text-sm mt-1">{role}</p>
-    </motion.div>
-  );
-};
+const TeamCard = ({ name, role, image }) => (
+  <motion.div
+    variants={{
+      hidden: { opacity: 0, y: 30, scale: 0.96 },
+      show: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: { duration: 0.55, ease: "easeOut" },
+      },
+    }}
+    whileHover={{ y: -6, borderColor: "rgba(34,211,238,0.5)" }}
+    transition={{ duration: 0.25 }}
+    className="bg-[#0B1112] border border-cyan-400/20 rounded-2xl p-6 flex flex-col items-center text-center"
+  >
+    <div className="w-24 h-24 rounded-full bg-cyan-400/10 border border-cyan-400/30 flex items-center justify-center overflow-hidden mb-5">
+      {image ? (
+        <img src={image} alt={name} className="w-full h-full object-cover" />
+      ) : (
+        <User className="w-10 h-10 text-cyan-400" />
+      )}
+    </div>
+    <h3 className="text-lg font-semibold">{name}</h3>
+    <p className="text-cyan-400 text-sm mt-1">{role}</p>
+  </motion.div>
+);
 
 export default About;
-
-

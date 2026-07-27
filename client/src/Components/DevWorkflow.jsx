@@ -1,44 +1,62 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
+import {
+  MessageSquareText,
+  PenTool,
+  Palette,
+  Code,
+  Server,
+  ShieldCheck,
+  Rocket,
+  Wrench,
+} from "lucide-react";
 
 const STEPS = [
   {
     id: "01",
+    icon: MessageSquareText,
     title: "Client Discussion & Planning",
     desc: "Deep-dive discovery calls to align on goals, scope, and technical constraints before a single line of code is written.",
   },
   {
     id: "02",
+    icon: PenTool,
     title: "Designing",
     desc: "Wireframes and information architecture that map the full user journey, validated with stakeholders early.",
   },
   {
     id: "03",
+    icon: Palette,
     title: "UI / UX",
     desc: "High-fidelity interface design with a cohesive visual system, motion language, and accessibility built in from the start.",
   },
   {
     id: "04",
+    icon: Code,
     title: "Frontend Development",
     desc: "Pixel-accurate, performant interfaces built with modern component architecture and smooth interaction states.",
   },
   {
     id: "05",
+    icon: Server,
     title: "Backend Development",
     desc: "Scalable APIs, data models, and infrastructure engineered for reliability under real production load.",
   },
   {
     id: "06",
+    icon: ShieldCheck,
     title: "Testing",
     desc: "Automated and manual QA across devices and edge cases, catching regressions before they ever reach users.",
   },
   {
     id: "07",
+    icon: Rocket,
     title: "Deployment",
     desc: "Zero-downtime, blue-green releases with monitoring and rollback plans in place from day one.",
   },
   {
     id: "08",
+    icon: Wrench,
     title: "Maintenance",
     desc: "Ongoing optimization, security patching, and feature iteration guided by real usage data.",
   },
@@ -81,7 +99,10 @@ function StepCard({ step, index, total, progress }) {
         */}
         <span className="z-10 text-white">{step.id}</span>
       </motion.div>
-      <h3 className="font-display font-bold text-2xl mb-3">{step.title}</h3>
+      <div className="flex items-center gap-3 mb-3">
+        <step.icon className="w-6 h-6 text-cyan-400 shrink-0" />
+        <h3 className="font-display font-bold text-2xl">{step.title}</h3>
+      </div>
       <p className="text-base text-gray-secondary leading-relaxed pr-6">
         {step.desc}
       </p>
