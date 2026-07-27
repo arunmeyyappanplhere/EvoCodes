@@ -1,5 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from 'axios';
+import {
+  MapPin,
+  Mail,
+  Phone,
+  Clock,
+} from 'lucide-react';
+import { FaFacebook, FaLinkedin, FaInstagram } from "react-icons/fa6";
+import { SiWhatsapp } from "react-icons/si";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +19,10 @@ const Contact = () => {
   });
 
   const [status, setStatus] = useState({ loading: false, error: null, success: false });
+
+  useEffect(() => {
+    document.title = "EVO CODES | Contact Us";
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -52,14 +64,14 @@ const Contact = () => {
     }
   };
 
-  document.title = "EVO CODES | Contact Us";
-
   return (
     <section className="min-h-screen bg-[#050A0A] text-white py-24 px-6 relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full"></div>
+      {/* Background Glows */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
+        {/* Header Section */}
         <div className="text-center mb-16">
           <span className="px-4 py-2 rounded-full border border-cyan-400 text-cyan-400 tracking-widest text-sm">
             CONTACT US
@@ -73,23 +85,28 @@ const Contact = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
-          <div className="space-y-6">
-            <InfoCard emoji="📧" title="Email" value="hello@evocodes.com" />
-            <InfoCard emoji="📞" title="Phone" value="+91 98765 43210" />
-            <InfoCard emoji="📍" title="Location" value="Chennai, Tamil Nadu" />
-            <InfoCard emoji="🕒" title="Working Hours" value="Monday - Friday | 9 AM - 6 PM" />
+        {/* Main Grid: 2 Columns on Large Screens */}
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
 
-            <div className="hidden lg:block">
+          {/* LEFT COLUMN: Contact Details & Social Links */}
+          <div className="space-y-6">
+            <InfoCard Component={Mail} title="Email" value="hello@evocodes.com" />
+            <InfoCard Component={Phone} title="Phone" value="+91 98765 43210" />
+            <InfoCard Component={MapPin} title="Location" value="Chennai, Tamil Nadu" />
+            <InfoCard Component={Clock} title="Working Hours" value="Monday - Friday | 9 AM - 6 PM" />
+
+            <div className="pt-2">
               <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
               <div className="flex gap-4">
-                <SocialButton text="GitHub" />
-                <SocialButton text="LinkedIn" />
-                <SocialButton text="Instagram" />
+                <SocialButton Component={FaFacebook} />
+                <SocialButton Component={FaLinkedin} />
+                <SocialButton Component={FaInstagram} />
+                <SocialButton Component={SiWhatsapp} />
               </div>
             </div>
           </div>
 
+          {/* RIGHT COLUMN: Contact Form */}
           <div className="bg-[#0B1112] border border-cyan-400/20 rounded-3xl p-8 backdrop-blur-lg">
             <h2 className="text-3xl font-bold mb-8">Send a Message</h2>
 
@@ -114,7 +131,7 @@ const Contact = () => {
                   value={formData.contactRequestSenderName}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-xl bg-deep-slate border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition"
+                  className="w-full rounded-xl bg-black/40 border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition text-white"
                 />
 
                 <input
@@ -124,7 +141,7 @@ const Contact = () => {
                   value={formData.contactRequestEmail}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-xl bg-deep-slate border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition"
+                  className="w-full rounded-xl bg-black/40 border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition text-white"
                 />
               </div>
 
@@ -134,7 +151,7 @@ const Contact = () => {
                 placeholder="Phone Number"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full rounded-xl bg-deep-slate border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition"
+                className="w-full rounded-xl bg-black/40 border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition text-white"
               />
 
               <input
@@ -144,17 +161,17 @@ const Contact = () => {
                 value={formData.contactRequestSubject}
                 onChange={handleChange}
                 required
-                className="w-full rounded-xl bg-deep-slate border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition"
+                className="w-full rounded-xl bg-black/40 border border-cyan-400/20 px-5 py-4 outline-none focus:border-cyan-400 transition text-white"
               />
 
               <textarea
-                rows="7"
+                rows="6"
                 name="contactRequestDesc"
                 placeholder="Tell us about your project..."
                 value={formData.contactRequestDesc}
                 onChange={handleChange}
                 required
-                className="w-full rounded-xl bg-deep-slate border border-cyan-400/20 px-5 py-4 outline-none resize-none focus:border-cyan-400 transition"
+                className="w-full rounded-xl bg-black/40 border border-cyan-400/20 px-5 py-4 outline-none resize-none focus:border-cyan-400 transition text-white"
               />
 
               <div className="flex justify-center">
@@ -168,17 +185,18 @@ const Contact = () => {
               </div>
             </form>
           </div>
+
         </div>
       </div>
     </section>
   );
 };
 
-const InfoCard = ({ emoji, title, value }) => (
+const InfoCard = ({ Component, title, value }) => (
   <div className="bg-[#0B1112] border border-cyan-400/20 rounded-2xl p-6 hover:border-cyan-400 transition duration-300">
     <div className="flex items-center gap-5">
       <div className="w-14 h-14 rounded-xl bg-cyan-400/10 flex items-center justify-center text-2xl">
-        {emoji}
+        <Component color="cyan" />
       </div>
       <div>
         <h3 className="text-xl font-semibold">{title}</h3>
@@ -188,9 +206,9 @@ const InfoCard = ({ emoji, title, value }) => (
   </div>
 );
 
-const SocialButton = ({ text }) => (
-  <button className="px-5 py-3 rounded-xl bg-[#0B1112] border border-cyan-400/20 hover:bg-cyan-400 hover:text-black transition-all duration-300">
-    {text}
+const SocialButton = ({ Component }) => (
+  <button className="px-5 py-3 rounded-xl bg-[#0B1112] border border-cyan-400/20 hover:border-cyan-300 hover:text-black transition-all duration-300 inline-flex items-center justify-center">
+    <Component color="cyan" />
   </button>
 );
 
