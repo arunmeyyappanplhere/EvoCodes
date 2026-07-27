@@ -1,27 +1,33 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { FaGithub, FaTwitter } from "react-icons/fa";
-import logo from "/public/evo-codes-logo.jpeg";
 
 const columns = [
   {
     title: "Solutions",
     links: [
-      "AI Integration",
-      "SaaS Architecture",
-      "Design Systems",
-      "Blockchain Labs",
+      { label: "AI Integration", href: "/services" },
+      { label: "SaaS Architecture", href: "/services" },
+      { label: "Design Systems", href: "/services" },
+      { label: "Blockchain Labs", href: "/services" },
     ],
   },
   {
     title: "Company",
-    links: ["About Us", "Our Mentor", "Career", "Journal"],
+    links: [
+      { label: "About Us", href: "/about" },
+      { label: "Projects", href: "/projects" },
+      { label: "Blogs", href: "/blogs" },
+      { label: "Contact", href: "/contact" },
+    ],
   },
 ];
 
 export default function Footer() {
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
 
   return (
     <footer className="border-t border-cyan-400/10 bg-charcoal/30">
@@ -51,15 +57,22 @@ export default function Footer() {
             digital design.
           </p>
           <div className="flex gap-3 mt-6">
-            {[FaGithub, FaTwitter].map((Icon, i) => (
-              <a
-                key={i}
-                href="#"
-                className="w-9 h-9 rounded-full border border-cyan-400/20 flex items-center justify-center text-gray-secondary hover:text-cyan-400 hover:border-cyan-400/50 transition-colors"
-              >
-                <Icon size={15} />
-              </a>
-            ))}
+            <a
+              href="https://github.com/arunmeyyappanplhere"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full border border-cyan-400/20 flex items-center justify-center text-gray-secondary hover:text-cyan-400 hover:border-cyan-400/50 transition-colors"
+            >
+              <FaGithub size={15} />
+            </a>
+            <a
+              href="https://twitter.com/evocodes"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full border border-cyan-400/20 flex items-center justify-center text-gray-secondary hover:text-cyan-400 hover:border-cyan-400/50 transition-colors"
+            >
+              <FaTwitter size={15} />
+            </a>
           </div>
         </div>
 
@@ -69,14 +82,14 @@ export default function Footer() {
               {col.title}
             </h4>
             <ul className="space-y-3">
-              {col.links.map((l) => (
-                <li key={l}>
-                  <a
-                    href="#"
-                    className="text-sm text-gray-secondary hover:text-white transition-colors"
+              {col.links.map((link) => (
+                <li key={link.label}>
+                  <button
+                    onClick={() => navigate(link.href)}
+                    className="text-sm text-gray-secondary hover:text-white transition-colors text-left cursor-pointer"
                   >
-                    {l}
-                  </a>
+                    {link.label}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -118,15 +131,24 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-secondary">
           <span>© 2026 Evo Codes. Engineered for the Future.</span>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-white transition-colors">
+            <button
+              onClick={() => navigate("/privacy")}
+              className="hover:text-white transition-colors text-xs text-gray-secondary cursor-pointer"
+            >
               Privacy
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
+            </button>
+            <button
+              onClick={() => navigate("/terms")}
+              className="hover:text-white transition-colors text-xs text-gray-secondary cursor-pointer"
+            >
               Terms
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
+            </button>
+            <button
+              onClick={() => navigate("/privacy")}
+              className="hover:text-white transition-colors text-xs text-gray-secondary cursor-pointer"
+            >
               Security
-            </a>
+            </button>
           </div>
         </div>
       </div>
