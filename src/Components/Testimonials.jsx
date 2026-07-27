@@ -1,9 +1,10 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import { useFetch } from "../hooks/useFetch.js";
 import { transformTestimonial } from "../utils/transformers.js";
 import { LoadingState, ErrorState, EmptyState } from "./DataState.jsx";
+import Modal from "./Modal.jsx";
 
 const staggerContainer = {
   hidden: {},
@@ -24,6 +25,8 @@ export default function Testimonials() {
     () => allTestimonials.filter((t) => t.status === "Published"),
     [allTestimonials]
   );
+
+  const [selectedTestimonial, setSelectedTestimonial] = useState(null);
 
   return (
     <section id="testimonials" className="relative py-28 lg:py-36">
@@ -66,7 +69,8 @@ export default function Testimonials() {
                 variants={cardIn}
                 whileHover={{ y: -6, borderColor: "rgba(34,211,238,0.5)" }}
                 transition={{ duration: 0.25 }}
-                className="relative bg-charcoal/40 border border-cyan-400/15 rounded-2xl p-8 flex flex-col"
+                onClick={() => setSelectedTestimonial(t)}
+                className="relative bg-charcoal/40 border border-cyan-400/15 rounded-2xl p-8 flex flex-col cursor-pointer"
               >
                 <Quote className="text-cyan-400/30 mb-4" size={28} />
 
@@ -76,7 +80,7 @@ export default function Testimonials() {
                   ))}
                 </div>
 
-                <p className="text-sm text-white/85 leading-relaxed flex-1">
+                <p className="text-sm text-white/85 leading-relaxed flex-1 line-clamp-4">
                   "{t.quote}"
                 </p>
 
@@ -94,6 +98,39 @@ export default function Testimonials() {
           </motion.div>
         )}
       </div>
+
+      {/* Medium-sized modal for full testimonial detail */}
+      <Modal
+        open={!!selectedTestimonial}
+        onClose={() => setSelectedTestimonial(null)}
+        widthClass="max-w-2xl"
+      >
+        {selectedTestimonial && (
+          <div className="flex flex-col">
+            <Quote className="text-cyan-400/40 mb-5" size={36} />
+
+            <div className="flex gap-1 mb-5">
+              {Array.from({ length: selectedTestimonial.rating }).map((_, i) => (
+                <Star key={i} size={16} className="fill-cyan-400 text-cyan-400" />
+              ))}
+            </div>
+
+            <p className="text-base text-white/90 leading-relaxed mb-8">
+              "{selectedTestimonial.quote}"
+            </p>
+
+            <div className="flex items-center gap-4 pt-6 border-t border-white/10 mt-auto">
+              <div className="w-12 h-12 rounded-full bg-cyan-400/10 border border-cyan-400/25 flex items-center justify-center text-cyan-400 text-sm font-semibold">
+                {selectedTestimonial.initials}
+              </div>
+              <div>
+                <p className="text-base font-semibold text-white">{selectedTestimonial.name}</p>
+                <p className="text-sm text-gray-secondary">{selectedTestimonial.role}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
     </section>
   );
 }

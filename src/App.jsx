@@ -16,6 +16,8 @@ import About from "./Components/About.jsx";
 import ServicesOnHome from "./Components/ServicesOnHome.jsx";
 import Projects from "./Components/Projects.jsx";
 import Blogs from "./Components/Blogs.jsx";
+import Terms from "./Components/Terms.jsx";
+import Privacy from "./Components/Privacy.jsx";
 
 function Home() {
   document.title = "EVO CODES | Home"
@@ -56,6 +58,8 @@ export default function App() {
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
         </Routes>
       </Layout>
     </BrowserRouter>
