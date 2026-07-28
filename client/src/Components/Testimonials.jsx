@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import { useFetch } from "../hooks/useFetch.js";
-import { transformTestimonial } from "../utils/transformers.js";
+import { transformTestimonial } from "../utils/Transformers.js";
 import { LoadingState, ErrorState, EmptyState } from "./DataState.jsx";
 import Modal from "./Modal.jsx";
 
