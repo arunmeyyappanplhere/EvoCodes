@@ -59,9 +59,9 @@ const About = () => {
     const fetchStats = async () => {
       try {
         const res1 = await axios.get(
-          "process.env.BACKEND_API/testimonials/stats",
+          import.meta.env.VITE_BACKEND_API + "/testimonials/stats",
         );
-        const res2 = await axios.get(process.env.BACKEND_API + "/");
+        const res2 = await axios.get(import.meta.env.VITE_BACKEND_API + "/");
         const { projects, employees } = res2.data;
 
         const { averageRating } = res1.data;
