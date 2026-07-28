@@ -47,7 +47,7 @@ const Contact = () => {
     };
 
     try {
-      const response = await axios.post("https://evocodesbackend.onrender.com/api/contact", contactData);  
+      const response = await axios.post("process.env.BACKEND_API/contact", contactData);  
       if (response.status === 201 || response.status === 200) {
         setStatus({ loading: false, error: null, success: true });
         setFormData({
