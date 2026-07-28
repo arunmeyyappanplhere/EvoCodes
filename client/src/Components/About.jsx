@@ -59,9 +59,9 @@ const About = () => {
     const fetchStats = async () => {
       try {
         const res1 = await axios.get(
-          "http://localhost:8000/api/testimonials/stats",
+          "https://evocodesbackend.onrender.com/api/testimonials/stats",
         );
-        const res2 = await axios.get("http://localhost:8000/api/");
+        const res2 = await axios.get("https://evocodesbackend.onrender.com/api/");
         const { projects, employees } = res2.data;
 
         const { averageRating } = res1.data;
