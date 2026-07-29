@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
-import { FaGithub, FaTwitter } from "react-icons/fa";
+import { FaGithub, FaXTwitter, FaLinkedin, FaInstagram, FaFacebook } from "react-icons/fa6";
+import { SiWhatsapp } from "react-icons/si";
+import { Mail } from "lucide-react";
 
 const columns = [
   {
@@ -56,9 +58,9 @@ export default function Footer() {
             Pioneering the intersection of algorithmic intelligence and premium
             digital design.
           </p>
-          <div className="flex gap-3 mt-6">
+          <div className="flex gap-3 mt-6 flex-wrap">
             <a
-              href="https://github.com/arunmeyyappanplhere"
+              href="https://github.com/evocodes-official"
               target="_blank"
               rel="noopener noreferrer"
               className="w-9 h-9 rounded-full border border-cyan-400/20 flex items-center justify-center text-gray-secondary hover:text-cyan-400 hover:border-cyan-400/50 transition-colors"
@@ -66,12 +68,52 @@ export default function Footer() {
               <FaGithub size={15} />
             </a>
             <a
-              href="https://twitter.com/evocodes"
+              href="https://x.com/EvoCodes_"
               target="_blank"
               rel="noopener noreferrer"
               className="w-9 h-9 rounded-full border border-cyan-400/20 flex items-center justify-center text-gray-secondary hover:text-cyan-400 hover:border-cyan-400/50 transition-colors"
             >
-              <FaTwitter size={15} />
+              <FaXTwitter size={15} />
+            </a>
+            <a
+              href="https://www.linkedin.com/company/evo-codes/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full border border-cyan-400/20 flex items-center justify-center text-gray-secondary hover:text-cyan-400 hover:border-cyan-400/50 transition-colors"
+            >
+              <FaLinkedin size={15} />
+            </a>
+            <a
+              href="https://www.instagram.com/evocodes.dev?igsh=cWhlaWVjOWc0NXkz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full border border-cyan-400/20 flex items-center justify-center text-gray-secondary hover:text-cyan-400 hover:border-cyan-400/50 transition-colors"
+            >
+              <FaInstagram size={15} />
+            </a>
+            <a
+              href="https://www.facebook.com/share/1DFGwPJQpH/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full border border-cyan-400/20 flex items-center justify-center text-gray-secondary hover:text-cyan-400 hover:border-cyan-400/50 transition-colors"
+            >
+              <FaFacebook size={15} />
+            </a>
+            <a
+              href="https://wa.me/+919042949000"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full border border-cyan-400/20 flex items-center justify-center text-gray-secondary hover:text-cyan-400 hover:border-cyan-400/50 transition-colors"
+            >
+              <SiWhatsapp size={15} />
+            </a>
+            <a
+              href="mailto:evocodes.co@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full border border-cyan-400/20 flex items-center justify-center text-gray-secondary hover:text-cyan-400 hover:border-cyan-400/50 transition-colors"
+            >
+              <Mail size={15} />
             </a>
           </div>
         </div>

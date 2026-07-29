@@ -152,7 +152,7 @@ const About = () => {
   ];
 
   return (
-    <section className="min-h-screen bg-[#050A0A] text-white py-24 px-6 relative overflow-hidden">
+    <section className="min-h-screen bg-transparent text-white py-24 px-6 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full pointer-events-none"></div>
 

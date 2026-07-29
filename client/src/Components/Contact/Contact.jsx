@@ -6,7 +6,7 @@ import {
   Phone,
   Clock,
 } from 'lucide-react';
-import { FaFacebook, FaLinkedin, FaInstagram } from "react-icons/fa6";
+import { FaFacebook, FaLinkedin, FaInstagram, FaXTwitter, FaGithub } from "react-icons/fa6";
 import { SiWhatsapp } from "react-icons/si";
 
 const Contact = () => {
@@ -65,7 +65,7 @@ const Contact = () => {
   };
 
   return (
-    <section className="min-h-screen bg-[#050A0A] text-white py-24 px-6 relative overflow-hidden">
+    <section className="min-h-screen bg-transparent text-white py-24 px-6 relative overflow-hidden">
       {/* Background Glows */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full pointer-events-none"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/10 blur-[160px] rounded-full pointer-events-none"></div>
@@ -98,10 +98,13 @@ const Contact = () => {
             <div className="pt-2">
               <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
               <div className="flex gap-4">
-                <SocialButton Component={FaFacebook} />
-                <SocialButton Component={FaLinkedin} />
-                <SocialButton Component={FaInstagram} />
-                <SocialButton Component={SiWhatsapp} />
+                <SocialButton Component={FaFacebook} href="https://www.facebook.com/share/1DFGwPJQpH/" />
+                <SocialButton Component={FaLinkedin} href="https://www.linkedin.com/company/evo-codes/" />
+                <SocialButton Component={FaInstagram} href="https://www.instagram.com/evocodes.dev?igsh=cWhlaWVjOWc0NXkz" />
+                <SocialButton Component={SiWhatsapp} href="https://wa.me/+919042949000" />
+                <SocialButton Component={FaXTwitter} href="https://x.com/EvoCodes_" />
+                <SocialButton Component={FaGithub} href="https://github.com/evocodes-official" />
+                <SocialButton Component={Mail} href="mailto:evocodes.co@gmail.com" />
               </div>
             </div>
           </div>
@@ -206,10 +209,15 @@ const InfoCard = ({ Component, title, value }) => (
   </div>
 );
 
-const SocialButton = ({ Component }) => (
-  <button className="px-5 py-3 rounded-xl bg-[#0B1112] border border-cyan-400/20 hover:border-cyan-300 hover:text-black transition-all duration-300 inline-flex items-center justify-center">
+const SocialButton = ({ Component, href }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="px-5 py-3 rounded-xl bg-[#0B1112] border border-cyan-400/20 hover:border-cyan-300 hover:text-black transition-all duration-300 inline-flex items-center justify-center"
+  >
     <Component color="cyan" />
-  </button>
+  </a>
 );
 
 export default Contact;
