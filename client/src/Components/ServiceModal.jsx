@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { hexToRgba, chipStyle, textStyle } from '../utils/color.js'
+import { chipStyle, textStyle } from '../utils/color.js'
 
 export default function ServiceModal({ service, onClose }) {
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function ServiceModal({ service, onClose }) {
             <X size={16} />
           </button>
 
-          {/* Icon -- themed via inline style from the hex color */}
+          {/* Icon -- themed via inline style from color.js (handles hex + Tailwind) */}
           <div
             className="w-14 h-14 rounded-2xl border flex items-center justify-center mb-6 overflow-hidden"
             style={chipStyle(service.color)}
@@ -83,11 +83,7 @@ export default function ServiceModal({ service, onClose }) {
                   <span
                     key={t}
                     className="text-[11px] font-mono px-2.5 py-1.5 rounded-full border"
-                    style={{
-                      color: service.color,
-                      borderColor: hexToRgba(service.color, 0.25),
-                      backgroundColor: hexToRgba(service.color, 0.08),
-                    }}
+                    style={chipStyle(service.color)}
                   >
                     {t}
                   </span>

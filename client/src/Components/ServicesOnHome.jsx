@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useFetch } from "../hooks/useFetch.js";
 import { transformService } from "../utils/transformers.js";
+import { chipStyle, textStyle } from "../utils/color.js";
 import { LoadingState, ErrorState, EmptyState } from "./DataState.jsx";
 import ServiceModal from "./ServiceModal.jsx";
 
@@ -70,47 +71,49 @@ export default function ServicesOnHome() {
               whileHover={{ y: -6, borderColor: "rgba(34,211,238,0.4)" }}
               className="card-border bg-charcoal rounded-2xl p-7 transition-colors flex flex-col"
             >
-              {(() => {
-                const isHex =
-                  typeof s.color === "string" && s.color.startsWith("#");
-                const iconStyle = isHex
-                  ? {
-                      backgroundColor: s.color + "1a",
-                      color: s.color,
-                      borderColor: s.color + "40",
-                    }
-                  : {};
-                const iconClass = isHex ? "" : s.color;
-                return (
-                  <div
-                    className={`w-11 h-11 rounded-xl border flex items-center justify-center mb-6 overflow-hidden ${iconClass}`}
-                    style={iconStyle}
-                  >
-                    {s.iconUrl ? (
-                      <img
-                        src={s.iconUrl}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      s.icon && <s.icon size={20} />
-                    )}
-                  </div>
-                );
-              })()}
+              <div
+                className="w-11 h-11 rounded-xl border flex items-center justify-center mb-6 overflow-hidden"
+                style={chipStyle(s.color)}
+              >
+                {s.iconUrl ? (
+                  <img
+                    src={s.iconUrl}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  s.icon && <s.icon size={20} />
+                )}
+              </div>
               <h3
                 className="font-display font-semibold text-lg mb-2.5"
-                style={(() => {
-                  const isHex =
-                    typeof s.color === "string" && s.color.startsWith("#");
-                  return isHex ? { color: s.color } : {};
-                })()}
+                style={textStyle(s.color)}
               >
                 {s.title}
               </h3>
               <p className="text-sm text-gray-secondary leading-relaxed mb-6 flex-1">
                 {s.desc}
               </p>
+
+              {s.stack.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-5">
+                  {s.stack.slice(0, 4).map((t) => (
+                    <span
+                      key={t}
+                      className="text-[10px] font-mono px-2 py-1 rounded-full border"
+                      style={chipStyle(s.color)}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                  {s.stack.length > 4 && (
+                    <span className="text-[10px] font-mono px-2 py-1 rounded-full border border-white/10 text-gray-secondary">
+                      +{s.stack.length - 4}
+                    </span>
+                  )}
+                </div>
+              )}
+
               <motion.button
                 onClick={() => setActive(s)}
                 whileHover={{ x: 4 }}

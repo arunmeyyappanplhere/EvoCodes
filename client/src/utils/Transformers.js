@@ -44,6 +44,8 @@ export function transformBlog(b) {
 // services: { serviceID, serviceName, serviceHead, serviceDescription, serviceIcon, serviceColor, serviceTechStacks[] }
 // serviceIcon is usually a lucide-react icon name string (e.g. "Cloud"), but the
 // controller allows a legacy Cloudinary image URL too — handle both.
+// serviceColor can be a hex string ("#22d3ee") or a Tailwind class string
+// ("bg-cyan-500/15 text-cyan-300") — either way, color.js utilities handle it.
 export function transformService(s) {
   const isImageIcon = typeof s.serviceIcon === 'string' && /^https?:\/\//.test(s.serviceIcon)
   return {

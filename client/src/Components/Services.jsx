@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { useFetch } from '../hooks/useFetch.js'
 import { transformService } from '../utils/transformers.js'
-import { chipStyle } from '../utils/color.js'
+import { chipStyle, textStyle } from '../utils/color.js'
 import { LoadingState, ErrorState, EmptyState } from './DataState.jsx'
 import ServiceModal from './ServiceModal.jsx'
 
@@ -13,7 +13,6 @@ export default function Services() {
 
   const transform = useCallback((s) => transformService(s), [])
   const { data: services, loading, error, refetch } = useFetch('/services', { transform })
-
   return (
     <section id="services" className="max-w-7xl mx-auto px-6 lg:px-10 py-28">
       <div className="flex flex-col items-center text-center mb-16">
@@ -77,12 +76,35 @@ export default function Services() {
                   s.icon && <s.icon size={20} />
                 )}
               </div>
-              <h3 className="font-display font-semibold text-lg mb-2.5">
+              <h3
+                className="font-display font-semibold text-lg mb-2.5"
+                style={textStyle(s.color)}
+              >
                 {s.title}
               </h3>
               <p className="text-sm text-gray-secondary leading-relaxed mb-6 flex-1">
                 {s.desc}
               </p>
+
+              {s.stack.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-5">
+                  {s.stack.slice(0, 4).map((t) => (
+                    <span
+                      key={t}
+                      className="text-[10px] font-mono px-2 py-1 rounded-full border"
+                      style={chipStyle(s.color)}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                  {s.stack.length > 4 && (
+                    <span className="text-[10px] font-mono px-2 py-1 rounded-full border border-white/10 text-gray-secondary">
+                      +{s.stack.length - 4}
+                    </span>
+                  )}
+                </div>
+              )}
+
               <motion.button
                 onClick={() => setActive(s)}
                 whileHover={{ x: 4 }}
